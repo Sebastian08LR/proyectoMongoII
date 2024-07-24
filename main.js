@@ -1,7 +1,7 @@
+import  Menu  from "./js/model/menu.js";
 
-
-
-
+const menu = new Menu();
+menu.run();
 
 // Uso de cada uno de los apartados de los modulos
 
