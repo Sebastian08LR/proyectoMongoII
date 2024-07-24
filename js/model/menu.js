@@ -1,6 +1,7 @@
 import readline from 'readline';
 import Connection from '../../db/connect/connect.js';
 import { Boletos } from './boletos.js';
+import { Pelicula } from './peliculas.js';
 export default class Menu {
   constructor(username, password) {
     this.options = [
@@ -29,7 +30,7 @@ export default class Menu {
 
   getInput() {
     return new Promise((resolve) => {
-      this.rl.question('Seleccione una opción: ', (choice) => {
+      this.rl.question('Select an option: ', (choice) => {
         resolve(choice);
       });
     });
@@ -45,7 +46,30 @@ export default class Menu {
         case "1":
           break;
         case "2":
-          console.log("Has seleccionado Peliculas");
+          const peliculas = new Pelicula();
+          console.log(`
+            PELICULAS MODULE
+            
+            1. Listar Peliculas
+            0. salir
+            
+                        `);
+
+            let choice;
+            choice = await this.getInput();
+            switch(choice) {
+              case "1":
+                await peliculas.getMovieNames();
+                console.log("press any key to continue")
+                await this.getInput();
+                break;
+              case "0":
+                  break;
+              default:
+                  console.log("Opción no válida. Por favor, intente de nuevo.");
+                  break;
+
+            }
           break;
         case "3":
           console.log("Has seleccionado Funciones");
@@ -79,7 +103,7 @@ export default class Menu {
           console.log("Has seleccionado Pagos");
           break;
         case "0":
-          console.log("Saliendo del programa...");
+          console.log("Saliendo de CineCampus");
           this.rl.close();
           break;
         default:
