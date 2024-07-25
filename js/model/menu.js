@@ -84,7 +84,7 @@ export default class Menu {
           console.log("Has seleccionado Usuarios");
           break;
         case "5":
-          const collections = new Boletos();
+          const boleteria = new Boletos();
           console.log(`
     BOLETOS MODULE
     
@@ -96,10 +96,10 @@ export default class Menu {
           crud = await this.getInput();
           switch(crud) {
             case "1":
-              await collections.GetAllCollections();
+              await boleteria.buyTickets();
               break;
             case "2":
-              await collections.CancelTickets();
+              await boleteria.CancelTickets();
               break;
             default:
               console.log("Opción no válida. Por favor, intente de nuevo.");
