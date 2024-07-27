@@ -28,7 +28,7 @@ export default class Menu {
     console.log("=====================");
   }
 
-  getInput(prompt = 'Select an option: ') {
+  getInput(prompt = '') {
     return new Promise((resolve) => {
       this.rl.question(prompt, (choice) => {
         resolve(choice);
@@ -39,6 +39,7 @@ export default class Menu {
     let choice;
     do {
       this.displayMenu();
+      console.log("Ingrese una opcion:")
       choice = await this.getInput();
       
       switch(choice) {
