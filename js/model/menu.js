@@ -2,6 +2,7 @@ import readline from 'readline';
 import Connection from '../../db/connect/connect.js';
 import { Boletos } from './boletos.js';
 import { Pelicula } from './peliculas.js';
+import { Pagos } from './pagos.js';
 export default class Menu {
   constructor(username, password) {
     this.options = [
@@ -77,7 +78,7 @@ export default class Menu {
                 break;
             }
           } while (choice2 !== "0");
-          break;  // Añade este break para salir del case "2" del switch principal
+          break;  // salir del case "2" del switch principal
         case "3":
           console.log("Has seleccionado Funciones");
           break;
@@ -86,30 +87,60 @@ export default class Menu {
           break;
         case "5":
           const boleteria = new Boletos();
-          console.log(`
-    BOLETOS MODULE
-    
-    1. Comprar boletas
-    2. Cancelar compra
-    
-                `);
-          let crud;
-          console.log("Ingrese una opccion:"  )
-          crud = await this.getInput();
-          switch(crud) {
-            case "1":
-              await boleteria.buyTickets();
-              break;
-            case "2":
-              await boleteria.CancelTickets();
-              break;
-            default:
-              console.log("Opción no válida. Por favor, intente de nuevo.");
-              break;
-          }
-          break;  // Añade este break para salir del case "5" del switch principal
+          do{
+            console.log(`
+      BOLETOS MODULE
+      
+      1. Comprar boletas
+      2. Boletos De Usuario
+      2. Listar boletos vendidos
+      0. Salir
+      
+                  `);
+            let crud;
+            console.log("Ingrese una opccion:"  )
+            crud = await this.getInput();
+            switch(crud) {
+              case "1":
+                await boleteria.buyTickets();
+                break;
+              case "2":
+                await boleteria.findTicketsByUser();
+                break;
+              default:
+                console.log("Opción no válida. Por favor, intente de nuevo.");
+                break;
+            }
+            break;  //salir del case "5" del switch principal
+          } while (crud !== "0")
         case "6":
-          console.log("Has seleccionado Pagos");
+          const pagos = new Pagos();
+          do{
+            console.log(`
+      PAGOS MODULE
+      
+      1. Pagar boletas
+      2. Pagos pendientes de Usuario
+      2. Pagos realizados
+      0. Salir
+      
+                  `);
+            let crud;
+            console.log("Ingrese una opccion:"  )
+            crud = await this.getInput();
+            switch(crud) {
+              case "1":
+                await pagos.paymentManagement();
+                break;
+              case "2":
+                await boleteria.findTicketsByUser();
+                break;
+              default:
+                console.log("Opción no válida. Por favor, intente de nuevo.");
+                break;
+            }
+            break;  //salir del case "5" del switch principal
+          } while (crud !== "0")
           break;
         case "0":
           console.log("Saliendo de CineCampus");
