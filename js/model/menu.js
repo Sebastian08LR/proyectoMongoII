@@ -94,6 +94,7 @@ export default class Menu {
     
                 `);
           let crud;
+          console.log("Ingrese una opccion:"  )
           crud = await this.getInput();
           switch(crud) {
             case "1":

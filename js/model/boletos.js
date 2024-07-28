@@ -71,6 +71,9 @@ export class Boletos {
                                 if(documentoExistente[0].occupiedSeats.length >= capacidad){
                                     console.log("La sala está llena.");
                                     break;
+                                }else if(documentoExistente[0].occupiedSeats.length < capacidad){
+                                    console.log('Asientos:');
+                                    console.log(sala.asientos);
                                 }
                             }else if(documentoExistente.length === 0){
                                     console.log('Asientos:');
@@ -90,16 +93,25 @@ export class Boletos {
 
                                 // agregar el asiento comprado a la funcion
                                 if (documentoExistente.length <= 0) {
+                                    console.log(insertVerification);
                                     await asientosProyectionColection.insertOne({
                                         id_pelicula: movie_id,
                                         id_proyection: proyeccion_id,
                                         occupiedSeats: [`${numAsiento}${letraAsiento}`]
                                     });
                                 } else if (documentoExistente.length > 0) {
-                                    await asientosProyectionColection.updateOne(
-                                        { _id: documentoExistente[0]._id },
-                                        { $addToSet: { occupiedSeats: `${numAsiento}${letraAsiento}` } }
-                                    );
+                                    const existingSeats = documentoExistente[0].occupiedSeats;
+                                    const newSeat = `${numAsiento}${letraAsiento}`;
+                                
+                                    if (existingSeats.includes(newSeat)) {
+                                        console.log(`El asiento ${newSeat} ya está ocupado.`);
+                                    } else {
+                                        await asientosProyectionColection.updateOne(
+                                            { _id: documentoExistente[0]._id },
+                                            { $addToSet: { occupiedSeats: newSeat } }
+                                        );
+                                        console.log(`El asiento ${newSeat} ha sido añadido.`);
+                                    }
                                 }
 
                                 // crear el boleto correspondiente
@@ -115,8 +127,21 @@ export class Boletos {
                                             "precio_total": 10.50,
                                             "descuento_aplicado": 10,
                                             "fecha_compra": new Date()
-                                            
-                                    })
+                                        })
+                                    console.log("Su boleto es:")
+                                    console.log(`
+    //-----------------------------//
+    "pelicula_id": ${movie_id}
+    "proyeccion_id": ${proyeccion_id}
+    "usuario_id": ${usuarioId}
+    "asiento": {
+        "numero": ${numAsiento} 
+        "fila":  ${letraAsiento}
+    },
+    "precio_total": 10.50,
+    "descuento_aplicado": 10%,
+    //-----------------------------//
+                                        `)        
                                 }else if(usuarioRol === "estandar"){
                                     await boletosColection.insertOne({
                                         "pelicula_id": movie_id,
@@ -129,8 +154,21 @@ export class Boletos {
                                         "precio_total": 10.50,
                                         "descuento_aplicado": 0,
                                         "fecha_compra": new Date()
-                                        
-                                })
+                                    })
+                                    console.log("Su boleto es:")
+                                    console.log(`
+    //-----------------------------//
+    "pelicula_id": ${movie_id}
+    "proyeccion_id": ${proyeccion_id}
+    "usuario_id": ${usuarioId}
+    "asiento": {
+        "numero": ${numAsiento} 
+        "fila":  ${letraAsiento}
+    },
+    "precio_total": 10.50,
+    "descuento_aplicado": 0,
+    //-----------------------------//
+                                        `)         
                                 }
                             }else if(!asientoExiste){
                                 console.log("El asiento que ingresó no está disponible");
