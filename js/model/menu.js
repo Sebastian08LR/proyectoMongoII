@@ -121,7 +121,7 @@ export default class Menu {
       
       1. Pagar boletas
       2. Pagos pendientes de Usuario
-      2. Pagos realizados
+      3. Pagos realizados de Usuarios
       0. Salir
       
                   `);
@@ -133,8 +133,12 @@ export default class Menu {
                 await pagos.paymentManagement();
                 break;
               case "2":
-                await boleteria.findTicketsByUser();
+                await pagos.uncompletedPayments();
                 break;
+              case "3":
+                await pagos.completedPayments();
+                break;
+              case "0":
               default:
                 console.log("Opción no válida. Por favor, intente de nuevo.");
                 break;
