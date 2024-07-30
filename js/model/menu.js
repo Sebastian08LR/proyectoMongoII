@@ -3,12 +3,11 @@ import Connection from '../../db/connect/connect.js';
 import { Boletos } from './boletos.js';
 import { Pelicula } from './peliculas.js';
 import { Pagos } from './pagos.js';
+import { Usuarios } from './usuarios.js';
 export default class Menu {
   constructor(username, password) {
     this.options = [
-      "Salas",
       "Peliculas",
-      "Funciones",
       "Usuarios",
       "Boletas",
       "Pagos"
@@ -44,9 +43,7 @@ export default class Menu {
       choice = await this.getInput();
       
       switch(choice) {
-        case "1":
-          break;
-        case "2": 
+        case "1": 
           const peliculas = new Pelicula();
           let choice2;
           do {
@@ -78,14 +75,53 @@ export default class Menu {
                 break;
             }
           } while (choice2 !== "0");
-          break;  // salir del case "2" del switch principal
+          break;  
+        case "2":
+          const usuario = new Usuarios();
+          let choice3;
+          do {
+            console.log(`
+              USUARIOS MODULE
+              
+              1. Crear Usuario
+              2. Listar Usuarios
+              3. Detalles de Usuario
+              4. Actualizar Rol de Usuario
+              0. salir
+              
+                          `);
+            choice3 = await this.getInput();
+            switch(choice3) {
+              case "1":
+                await usuario.createUser();
+                console.log("press any key to continue")
+                await this.getInput();
+                break;
+              case "2":
+                await usuario.listAllUsers();
+                console.log("press any key to continue")
+                await this.getInput();
+                break;
+              case "3":
+                await usuario.getUserDetails();
+                console.log("press any key to continue")
+                await this.getInput();
+                break;
+              case "4":
+                await usuario.updateUserRol();
+                console.log("press any key to continue")
+                await this.getInput();
+                break;
+              case "0":
+                console.log("Saliendo del módulo de Usuarios");
+                break;
+              default:
+                console.log("Opción no válida. Por favor, intente de nuevo.");
+                break;
+            }
+          } while (choice3 !== "0");
+          break; 
         case "3":
-          console.log("Has seleccionado Funciones");
-          break;
-        case "4":
-          console.log("Has seleccionado Usuarios");
-          break;
-        case "5":
           const boleteria = new Boletos();
           do{
             console.log(`
@@ -93,7 +129,6 @@ export default class Menu {
       
       1. Comprar boletas
       2. Boletos De Usuario
-      2. Listar boletos vendidos
       0. Salir
       
                   `);
@@ -107,13 +142,16 @@ export default class Menu {
               case "2":
                 await boleteria.findTicketsByUser();
                 break;
+              case "0":
+                console.log("Saliendo del módulo de Boletos");
+                break;
               default:
                 console.log("Opción no válida. Por favor, intente de nuevo.");
                 break;
             }
-            break;  //salir del case "5" del switch principal
+            break;  
           } while (crud !== "0")
-        case "6":
+        case "4":
           const pagos = new Pagos();
           do{
             console.log(`
@@ -139,11 +177,13 @@ export default class Menu {
                 await pagos.completedPayments();
                 break;
               case "0":
+                  console.log("Saliendo del módulo de Pagos");
+                  break;
               default:
                 console.log("Opción no válida. Por favor, intente de nuevo.");
                 break;
             }
-            break;  //salir del case "5" del switch principal
+            break; 
           } while (crud !== "0")
           break;
         case "0":
