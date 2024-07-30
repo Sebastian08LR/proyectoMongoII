@@ -4,7 +4,15 @@ export class Boletos {
     constructor(username, password) {
         this.connection = new Connection(username, password);
     }
-
+    /**
+     * This function is responsible for buying tickets for a movie.
+     * It connects to a MongoDB database, retrieves movie and user data,
+     * and allows the user to select a movie and seat to purchase a ticket.
+     * It then creates a ticket document in the database, updates the occupied seats,
+     * and creates a payment document.
+     *
+     * @returns {Promise<void>}
+     */
     async buyTickets() {
         function buscarEstadoAsiento(asientos, numero, fila) {
             const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
@@ -201,6 +209,17 @@ export class Boletos {
             await this.connection.close();
         }
     }
+    /**
+     * This function retrieves and displays the tickets purchased by a specific user.
+     * It connects to a MongoDB database, retrieves user data, and fetches the corresponding boletos.
+     *
+     * @async
+     * @function findTicketsByUser
+     * @returns {Promise<void>}
+     *
+     * @throws Will throw an error if there is a problem connecting to the MongoDB database or retrieving data.
+     *
+     */
     async findTicketsByUser() {
         function buscarEstadoAsiento(asientos, numero, fila) {
             const asiento = asientos.find(a => a.numero === numero && a.fila === fila);

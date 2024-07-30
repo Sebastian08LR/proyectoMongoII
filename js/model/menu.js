@@ -18,7 +18,11 @@ export default class Menu {
     });
       this.connection = new Connection(username, password);
   }
-
+  /**
+ * Displays the main menu options to the console.
+ *
+ * @returns {void}
+ */
   displayMenu() {
     console.log("=== Menú Principal ===");
     this.options.forEach((option, index) => {
@@ -27,7 +31,13 @@ export default class Menu {
     console.log("0. Salir");
     console.log("=====================");
   }
-
+  /**
+ * Prompts the user for input using a readline interface.
+ *
+ * @param {string} [prompt=''] - The prompt message to display to the user.
+ *
+ * @returns {Promise<string>} - A promise that resolves with the user's input.
+ */
   getInput(prompt = '') {
     return new Promise((resolve) => {
       this.rl.question(prompt, (choice) => {
@@ -35,6 +45,11 @@ export default class Menu {
       });
     });
   }
+  /**
+   * The main menu loop that handles user choices and module navigation.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the main menu loop is exited.
+   */
   async run() {
     let choice;
     do {

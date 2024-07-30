@@ -4,6 +4,12 @@ export class Pelicula {
     constructor(username, password) {
         this.connection = new Connection(username, password);
     }
+    /**
+     * Retrieves and displays the names of all movies in the database.
+     *
+     * @returns {void}
+     * @throws Will throw an error if there is a problem connecting to the database or retrieving data.
+     */
     async getMovieNames() {
         try {
             const db = await this.connection.connect()
@@ -29,7 +35,12 @@ export class Pelicula {
             await this.connection.close();
         }
     }
-
+    /**
+     * Retrieves and displays detailed information about a movie selected by the user.
+     *
+     * @returns {Promise<void>}
+     * @throws Will throw an error if there is a problem connecting to the database or retrieving data.
+     */
     async getMovieInfo(){
         try {
             const db = await this.connection.connect()

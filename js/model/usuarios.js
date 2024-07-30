@@ -4,7 +4,14 @@ export class Usuarios {
     constructor(username, password) {
         this.connection = new Connection(username, password);
     }
-
+    /**
+     * This function is responsible for creating a new user in the MongoDB database.
+     * It checks if the user is an admin and then prompts for new user details.
+     * If the new user's role is 'VIP', it also requires a VIP card number.
+     * The function logs the result of the user creation process.
+     *
+     * @returns {Promise<void>}
+     */
     async createUser() {
         function buscarEstadoAsiento(asientos, numero, fila) {
             const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
@@ -89,7 +96,14 @@ export class Usuarios {
             await this.connection.close();
         }
     }
-
+    /**
+     * This function is responsible for listing all users in the MongoDB database.
+     * It requires the user to be logged in as an admin.
+     * The function prompts for user credentials, checks if the user is an admin,
+     * and then retrieves all user names from the database.
+     *
+     * @returns {Promise<void>}
+     */
     async listAllUsers() {
         function buscarEstadoAsiento(asientos, numero, fila) {
             const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
@@ -140,6 +154,14 @@ export class Usuarios {
             await this.connection.close();
         }
     }
+    /**
+     * This function retrieves user details from the MongoDB database.
+     * It requires the user to be logged in as an admin.
+     * The function prompts for user credentials, checks if the user is an admin,
+     * and then retrieves the details of a specific user based on their ID.
+     *
+     * @returns {Promise<void>}
+     */
     async getUserDetails() {
         function buscarEstadoAsiento(asientos, numero, fila) {
             const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
@@ -194,6 +216,14 @@ export class Usuarios {
             await this.connection.close();
         }
     }
+    /**
+     * This function is responsible for updating the role of a user in the MongoDB database.
+     * It requires the user to be logged in as an admin.
+     * The function prompts for user credentials, checks if the user is an admin,
+     * retrieves the details of a specific user based on their ID, and updates their role.
+     *
+     * @returns {Promise<void>}
+     */
     async updateUserRol() {
         function buscarEstadoAsiento(asientos, numero, fila) {
             const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
