@@ -38,14 +38,10 @@ async paymentManagement() {
         let increment = 1;
 
         // Prompt user for username and password
-        console.log("Usuario: ");
-        const nombre = await input.getInput();
-        console.log("Contraseña: ");
-        const password = await input.getInput();
+        const nombre = "Juan Pérez"
+        const password = "k9P3x"
 
         // Validate user credentials
-        console.log(nombre);
-        console.log(password);
         const usuario = await usuariosColection.find({
             $and: [
                 { nombre: nombre },
@@ -61,19 +57,12 @@ async paymentManagement() {
 
         // If there are pending payments, display them and allow the user to pay
         if (pagosPendientes.length > 0) {
-            console.log(pagosPendientes);
-            console.log("Ingrese el ID De los boletos que va a pagar:");
-            const recipe = await input.getInput();
-            console.log(recipe);
-
-            // Parse input to get IDs of tickets to pay
-            const idsBoletos = recipe.split(',').map(Number);
-
+            const recipe = [1,2]
             // Initialize an array to store IDs of tickets not found in the pending payments
             const idsNoEncontrados = [];
 
             // Update the state of the selected tickets to "completado"
-            for (const id of idsBoletos) {
+            for (const id of recipe) {
                 const result = await pagosColection.updateOne(
                     { id: id, estado: "pendiente" },
                     { $set: { estado: "completado" } }
@@ -134,25 +123,17 @@ async uncompletedPayments() {
         const usuariosColection = db.collection('usuarios');
         const boletosColection = db.collection('boletos');
         const pagosColection = db.collection('pagos');
-
-        // Retrieve movie data
-        const peliculas = await peliculasColection.find().toArray();
-
         // Create a new instance of Menu
         const input = new Menu();
 
         // Initialize counter
         let increment = 1;
 
-        // Prompt user for username and password
-        console.log("Usuario: ");
-        const nombre = await input.getInput();
-        console.log("Contraseña: ");
-        const password = await input.getInput();
+        // credentials for the user authentication
+        const nombre = "Juan Pérez"
+        const password = "k9P3x"
 
         // Validate user credentials
-        console.log(nombre);
-        console.log(password);
         const usuario = await usuariosColection.find({
             $and: [
                 { nombre: nombre },
@@ -212,14 +193,11 @@ async uncompletedPayments() {
             const usuariosColection = db.collection('usuarios')
             const boletosColection = db.collection('boletos')
             const pagosColection = db.collection('pagos')
-            const peliculas = await peliculasColection.find().toArray();
             const input = new Menu();
             let increment = 1;
 
-            console.log("Usuario: ");
-            const nombre = await input.getInput()
-            console.log("Contraseña: ");
-            const password = await input.getInput()
+            const nombre = "Juan Pérez"
+            const password = "k9P3x"
             console.log(nombre);
             console.log(password);
             const usuario = await usuariosColection.find({

@@ -1,7 +1,23 @@
 import  Menu  from "./js/model/menu.js";
-
-const menu = new Menu();
-menu.run();
+import { Pelicula } from "./js/model/peliculas.js";
+import { Usuarios } from "./js/model/usuarios.js";
+import { Boletos } from "./js/model/boletos.js";
+import { Pagos } from "./js/model/pagos.js";
+const pelicula = new Pelicula();
+//pelicula.getMovieNames()
+//pelicula.getMovieInfo()
+const usuarios = new Usuarios();
+//usuarios.createUser();
+//usuarios.listAllUsers();
+//usuarios.getUserDetails();
+//usuarios.updateUserRol();
+const boleto = new Boletos();
+//boleto.buyTickets();
+//boleto.findTicketsByUser();
+const pago = new Pagos();
+//pago.uncompletedPayments(); 
+//pago.paymentManagement();
+//pago.completedPayments();
 
 // Uso de cada uno de los apartados de los modulos
 

@@ -31,12 +31,9 @@ export class Boletos {
             const ultimoBoletoRegistrado = await boletosColection.findOne({}, { sort: { _id: -1 } });
             let increment = 1;
             
-            console.log("Usuario: ");
-            const nombre = await input.getInput()
-            console.log("Contraseña: ");
-            const password = await input.getInput()
-            console.log(nombre);
-            console.log(password);
+            
+            const nombre = "Juan Pérez"
+            const password = "k9P3x"
             const usuario = await usuariosColection.find({
                 $and: [
                     { nombre: nombre},
@@ -53,16 +50,13 @@ export class Boletos {
                 console.log(`------------------------------\n${increment++}. ${movie.titulo}`);
             }
 
-            let movie_id = await input.getInput();
-            movie_id = Number(movie_id);
+            let movie_id = 4
             let selectedMovie = await peliculasColection.findOne({ id: movie_id });
 
             if (selectedMovie) {
                 let proyections = selectedMovie.proyecciones;
                 console.log(proyections);
-                let proyeccion_id = await input.getInput();
-                proyeccion_id = Number(proyeccion_id);
-
+                let proyeccion_id = 18
                 for (let proyection of proyections) {
                     if (proyection.id === proyeccion_id) {
                         
@@ -91,14 +85,10 @@ export class Boletos {
                             }
                             let numAsiento;
                             let letraAsiento;
-                            console.log("Ingrese el NUMERO del asiento");
-                            numAsiento = await input.getInput();
-                            console.log("Ingrese la LETRA del asiento");
-                            letraAsiento = await input.getInput();
-                            numAsiento = Number(numAsiento);
+                            numAsiento = 3
+                            letraAsiento = "C"
                             letraAsiento = letraAsiento.toUpperCase();
-                            console.log("metodo de pago:");
-                            const metodoPago = await input.getInput();
+                            const metodoPago = "Tarjeta Crédito"
                             // Verificar si el asiento ingresado existe en la sala asignada a la funcion
                             const asientoExiste = sala.asientos.some(asiento => asiento.numero === numAsiento && asiento.fila === letraAsiento);    
                             if(asientoExiste){
@@ -236,12 +226,8 @@ export class Boletos {
             const input = new Menu();
             let increment = 1;
 
-            console.log("Usuario: ");
-            const nombre = await input.getInput()
-            console.log("Contraseña: ");
-            const password = await input.getInput()
-            console.log(nombre);
-            console.log(password);
+            const nombre = "Juan Pérez"
+            const password = "k9P3x"
             const usuario = await usuariosColection.find({
                 $and: [
                     { nombre: nombre},

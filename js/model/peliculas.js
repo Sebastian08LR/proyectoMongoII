@@ -51,8 +51,7 @@ export class Pelicula {
             for(let movie of peliculas){
                 console.log(`${movie.id}. ${movie.titulo}`)
             }
-            let movie_id = await input.getInput()
-            movie_id = Number(movie_id)
+            let movie_id = 3
             const pelicula = await peliculasColection.findOne(
                 { id: movie_id },
                 { projection: { _id: 0, id: 0 } }

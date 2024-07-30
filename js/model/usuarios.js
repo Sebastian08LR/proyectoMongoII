@@ -28,12 +28,8 @@ export class Usuarios {
             const input = new Menu();
             let increment = 1;
 
-            console.log("Usuario: ");
-            const nombre = await input.getInput()
-            console.log("Contraseña: ");
-            const password = await input.getInput()
-            console.log(nombre);
-            console.log(password);
+            const nombre = "Carlos Rodríguez"            
+            const password = "bN2Wy"
             const usuario = await usuariosColection.find({
                 $and: [
                     { nombre: nombre},
@@ -44,17 +40,12 @@ export class Usuarios {
                 const usuario_rol = usuario[0].rol
                 if(usuario_rol === "administrador"){
                     console.log("Bienvenido administrador");
-                    console.log("Ingrese el nombre del nuevo usuario:")
-                    const newUserName = await input.getInput()
-                    console.log("Ingrese la contraseña del nuevo usuario:")
-                    const newUserPassword = await input.getInput()
-                    console.log("Ingrese el rol del nuevo usuario (administrador o usuario o vip):")
-                    const newUserRole = await input.getInput()
-                    console.log("Ingrese el email del nuevo usuario");
-                    const newUserEmail = await input.getInput()
+                    const newUserName = "Pepito"
+                    const newUserPassword = "kLp345"
+                    const newUserRole = "vip"
+                    const newUserEmail = "pepitoperez@gmail.com"
                     if(newUserRole.toLowerCase() === "vip"){
-                        console.log("Ingrese el numero de la tarjeta VIP: ")
-                        const newUserVipCardNumber = await input.getInput()
+                        const newUserVipCardNumber = "2325225321990"
                         const newUserVIP = await usuariosColection.insertOne({
                             "id": LastUserRegister.id + 1,
                             "nombre": newUserName,
@@ -120,12 +111,8 @@ export class Usuarios {
             const input = new Menu();
             let increment = 1;
 
-            console.log("Usuario: ");
-            const nombre = await input.getInput()
-            console.log("Contraseña: ");
-            const password = await input.getInput()
-            console.log(nombre);
-            console.log(password);
+             const nombre = "Carlos Rodríguez"            
+            const password = "bN2Wy"
             const usuario = await usuariosColection.find({
                 $and: [
                     { nombre: nombre},
@@ -178,12 +165,8 @@ export class Usuarios {
             const input = new Menu();
             let increment = 1;
 
-            console.log("Usuario: ");
-            const nombre = await input.getInput()
-            console.log("Contraseña: ");
-            const password = await input.getInput()
-            console.log(nombre);
-            console.log(password);
+            const nombre = "Carlos Rodríguez"            
+            const password = "bN2Wy"
             const usuario = await usuariosColection.find({
                 $and: [
                     { nombre: nombre},
@@ -197,8 +180,7 @@ export class Usuarios {
                     const projection = { _id: 0, nombre: 1, id: 1 };
                     const usuarios = await usuariosColection.find({}, { projection }).toArray();
                     console.log(usuarios);
-                    console.log("Ingrese el ID del usuario para ver sus detalles:");
-                    const userId = await input.getInput()
+                    const userId = 3
                     const userDetails = await usuariosColection.findOne({ id: parseInt(userId) });
                     console.log(userDetails);
                 }else if(usuario_rol !== "administrador"){
@@ -240,12 +222,8 @@ export class Usuarios {
             const input = new Menu();
             let increment = 1;
 
-            console.log("Usuario: ");
-            const nombre = await input.getInput()
-            console.log("Contraseña: ");
-            const password = await input.getInput()
-            console.log(nombre);
-            console.log(password);
+             const nombre = "Carlos Rodríguez"            
+            const password = "bN2Wy"
             const usuario = await usuariosColection.find({
                 $and: [
                     { nombre: nombre},
@@ -259,11 +237,9 @@ export class Usuarios {
                     const projection = { _id: 0, nombre: 1, id: 1 };
                     const usuarios = await usuariosColection.find({}, { projection }).toArray();
                     console.log(usuarios);
-                    console.log("Ingrese el ID del usuario para ver sus detalles:");
-                    const userId = await input.getInput()
+                    const userId = 1
                     try {
-                        console.log("Ingrese el Nuevo rol para el usuario:")
-                        const newRole = await input.getInput()
+                        const newRole = "admministrador"
                         const updatedUser = await usuariosColection.updateOne({ id: parseInt(userId) }, { $set: { rol: newRole } });
                         console.log("Rol actualizado correctamente");
                         console.log(updatedUser);
