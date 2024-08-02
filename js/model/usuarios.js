@@ -12,76 +12,57 @@ export class Usuarios {
      *
      * @returns {Promise<void>}
      */
-    async createUser() {
-        function buscarEstadoAsiento(asientos, numero, fila) {
-            const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
-            return asiento ? asiento.estado : null;
-        }
+    async createUser(userName, password , rol, email , tarjeta_vip) {
         try {
-            const db = await this.connection.connect()
-            const peliculasColection = db.collection('peliculas')  
-            const usuariosColection = db.collection('usuarios')
-            const boletosColection = db.collection('boletos')
-            const pagosColection = db.collection('pagos')
-            const peliculas = await peliculasColection.find().toArray();
-            const LastUserRegister = await usuariosColection.findOne({}, { sort: { _id: -1 } });
-            const input = new Menu();
-            let increment = 1;
-
-            const nombre = "Carlos Rodríguez"            
-            const password = "bN2Wy"
-            const usuario = await usuariosColection.find({
-                $and: [
-                    { nombre: nombre},
-                    { password: password }
-                ]
-                }).toArray();
-            if(usuario.length > 0) {
-                const usuario_rol = usuario[0].rol
-                if(usuario_rol === "administrador"){
-                    console.log("Bienvenido administrador");
-                    const newUserName = "Pepito"
-                    const newUserPassword = "kLp345"
-                    const newUserRole = "vip"
-                    const newUserEmail = "pepitoperez@gmail.com"
-                    if(newUserRole.toLowerCase() === "vip"){
-                        const newUserVipCardNumber = "2325225321990"
-                        const newUserVIP = await usuariosColection.insertOne({
-                            "id": LastUserRegister.id + 1,
-                            "nombre": newUserName,
-                            "email": newUserEmail,
-                            "rol": newUserRole,
-                            "tarjeta_vip": {
-                                "numero": newUserVipCardNumber,
-                                "estado": "activo"
-                            },
-                            "password":  newUserPassword
-
-                        })
-                        console.log("Usuario creado exitosamente");
-                        console.log(newUserVIP)
-                    }else if(newUserRole.toLowerCase() !== "vip"){
-                        const newUser = await usuariosColection.insertOne({
-                            "id": LastUserRegister.id + 1,
-                            "nombre": newUserName,
-                            "email": newUserEmail,
-                            "rol": newUserRole,
-                            "tarjeta_vip": null,
-                            "password":  newUserPassword
-                        })
-                        console.log("Usuario creado exitosamente");
-                        console.log(newUser)
-                    }
-                }else if(usuario_rol !== "administrador"){
-                    console.log("para realizar esta operacion se necesita de un Usuario Administrador");
-                }
-
-            }else if(usuario.length === 0) {
-                console.log("Usuario o contraseña incorrectos");
-                return;
+            // Conectar a la base de datos admin
+            const db = await this.connection.connect();
+            const adminDb = db.db('admin'); // Conectarse a la base de datos admin
+    
+            // Definir el rol del nuevo usuario
+            let userRole;
+            if (rol === "administrador") {
+                userRole = [{ role: 'root', db: 'admin' }];
+            } else if (rol === "estandar") {
+                userRole = [{ role: 'usuarioStandard', db: 'admin' }];
+                tarjeta_vip = null;
+            } else if(rol === "vip"){
+                userRole = [{ role: 'usuarioStandard', db: 'admin' }];
+            }else {
+                throw new Error("Rol no reconocido");
             }
+    
+            // Crear un nuevo usuario en la base de datos admin
+            const newUser = {
+                user: userName,
+                pwd: password,
+                roles: userRole
+            };
+    
+            const result = await adminDb.command({
+                createUser: newUser.user,
+                pwd: newUser.pwd,
+                roles: newUser.roles
+            });
+    
+            console.log('Usuario creado en la base de datos admin:', result);
+    
+            // Insertar el nuevo usuario en la colección 'usuarios' dentro de la base de datos 'cineCampus'
+            const cineCampusDb = db.db('cineCampus'); // Conectar a la base de datos cineCampus
+            const usuariosColection = cineCampusDb.collection('usuarios');
+            const LastUserRegister = await usuariosColection.findOne({}, { sort: { _id: -1 } });
+            const userDocument = {
+                id: LastUserRegister.id +1,
+                nombre: userName,
+                email: email,
+                rol: rol,
+                tarjeta_vip: tarjeta_vip // Usar null si tarjeta_vip no está definida
+            };
+    
+            const insertResult = await usuariosColection.insertOne(userDocument);
+            console.log('Usuario insertado en la colección usuarios:', insertResult);
+    
         } catch (error) {
-            console.error('Error al conectar o obtener datos de MongoDB:', error);
+            console.error('Error al crear el usuario o insertarlo en la base de datos:', error);
             throw error;
         } finally {
             await this.connection.close();
@@ -96,106 +77,26 @@ export class Usuarios {
      * @returns {Promise<void>}
      */
     async listAllUsers() {
-        function buscarEstadoAsiento(asientos, numero, fila) {
-            const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
-            return asiento ? asiento.estado : null;
-        }
+        let client;
         try {
-            const db = await this.connection.connect()
-            const peliculasColection = db.collection('peliculas')  
-            const usuariosColection = db.collection('usuarios')
-            const boletosColection = db.collection('boletos')
-            const pagosColection = db.collection('pagos')
-            const peliculas = await peliculasColection.find().toArray();
-            const LastUserRegister = await usuariosColection.findOne({}, { sort: { _id: -1 } });
-            const input = new Menu();
-            let increment = 1;
-
-             const nombre = "Carlos Rodríguez"            
-            const password = "bN2Wy"
-            const usuario = await usuariosColection.find({
-                $and: [
-                    { nombre: nombre},
-                    { password: password }
-                ]
-                }).toArray();
-            if(usuario.length > 0) {
-                const usuario_rol = usuario[0].rol
-                if(usuario_rol === "administrador"){
-                    console.log("USUARIOS");
-                    const projection = { _id: 0, nombre: 1 };
-                    const usuarios = await usuariosColection.find({}, { projection }).toArray();
-                    console.log(usuarios);
-                }else if(usuario_rol !== "administrador"){
-                    console.log("para realizar esta operacion se necesita de un Usuario Administrador");
-                }
-
-            }else if(usuario.length === 0) {
-                console.log("Usuario o contraseña incorrectos");
-                return;
-            }
+            client = await this.connection.connect(); // Obtiene el cliente MongoDB
+            const db = client.db('cineCampus'); // Conectarse a la base de datos cineCampus
+            const adminDb = client.db('admin');
+            const usuariosColection = db.collection('usuarios'); // Accede a la colección 'usuarios'
+            
+            // Encuentra todos los documentos en la colección
+            const usuarios = await usuariosColection.find({}, { projection: { nombre: 1, id: 1 } }).toArray();
+            
+            console.log('Usuarios encontrados en la base de datos:', usuarios);
+            return usuarios; // Devuelve la lista de usuarios
+    
         } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
             throw error;
         } finally {
-            await this.connection.close();
-        }
-    }
-    /**
-     * This function retrieves user details from the MongoDB database.
-     * It requires the user to be logged in as an admin.
-     * The function prompts for user credentials, checks if the user is an admin,
-     * and then retrieves the details of a specific user based on their ID.
-     *
-     * @returns {Promise<void>}
-     */
-    async getUserDetails() {
-        function buscarEstadoAsiento(asientos, numero, fila) {
-            const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
-            return asiento ? asiento.estado : null;
-        }
-        try {
-            const db = await this.connection.connect()
-            const peliculasColection = db.collection('peliculas')  
-            const usuariosColection = db.collection('usuarios')
-            const boletosColection = db.collection('boletos')
-            const pagosColection = db.collection('pagos')
-            const peliculas = await peliculasColection.find().toArray();
-            const LastUserRegister = await usuariosColection.findOne({}, { sort: { _id: -1 } });
-            const input = new Menu();
-            let increment = 1;
-
-            const nombre = "Carlos Rodríguez"            
-            const password = "bN2Wy"
-            const usuario = await usuariosColection.find({
-                $and: [
-                    { nombre: nombre},
-                    { password: password }
-                ]
-                }).toArray();
-            if(usuario.length > 0) {
-                const usuario_rol = usuario[0].rol
-                if(usuario_rol === "administrador"){
-                    console.log("USUARIOS");
-                    const projection = { _id: 0, nombre: 1, id: 1 };
-                    const usuarios = await usuariosColection.find({}, { projection }).toArray();
-                    console.log(usuarios);
-                    const userId = 3
-                    const userDetails = await usuariosColection.findOne({ id: parseInt(userId) });
-                    console.log(userDetails);
-                }else if(usuario_rol !== "administrador"){
-                    console.log("para realizar esta operacion se necesita de un Usuario Administrador");
-                }
-
-            }else if(usuario.length === 0) {
-                console.log("Usuario o contraseña incorrectos");
-                return;
+            if (client) {
+                await this.connection.close(); // Asegúrate de cerrar la conexión
             }
-        } catch (error) {
-            console.error('Error al conectar o obtener datos de MongoDB:', error);
-            throw error;
-        } finally {
-            await this.connection.close();
         }
     }
     /**
@@ -206,61 +107,64 @@ export class Usuarios {
      *
      * @returns {Promise<void>}
      */
-    async updateUserRol() {
-        function buscarEstadoAsiento(asientos, numero, fila) {
-            const asiento = asientos.find(a => a.numero === numero && a.fila === fila);
-            return asiento ? asiento.estado : null;
-        }
+    async updateUserRol(userName, newRole) {
+        let client;
         try {
-            const db = await this.connection.connect()
-            const peliculasColection = db.collection('peliculas')  
-            const usuariosColection = db.collection('usuarios')
-            const boletosColection = db.collection('boletos')
-            const pagosColection = db.collection('pagos')
-            const peliculas = await peliculasColection.find().toArray();
-            const LastUserRegister = await usuariosColection.findOne({}, { sort: { _id: -1 } });
-            const input = new Menu();
-            let increment = 1;
-
-             const nombre = "Carlos Rodríguez"            
-            const password = "bN2Wy"
-            const usuario = await usuariosColection.find({
-                $and: [
-                    { nombre: nombre},
-                    { password: password }
-                ]
-                }).toArray();
-            if(usuario.length > 0) {
-                const usuario_rol = usuario[0].rol
-                if(usuario_rol === "administrador"){
-                    console.log("USUARIOS");
-                    const projection = { _id: 0, nombre: 1, id: 1 };
-                    const usuarios = await usuariosColection.find({}, { projection }).toArray();
-                    console.log(usuarios);
-                    const userId = 1
-                    try {
-                        const newRole = "admministrador"
-                        const updatedUser = await usuariosColection.updateOne({ id: parseInt(userId) }, { $set: { rol: newRole } });
-                        console.log("Rol actualizado correctamente");
-                        console.log(updatedUser);
-                    } catch (error) {
-                        console.error('Error al actualizar el rol del usuario:', error);
-                    }
-
-                    
-                }else if(usuario_rol !== "administrador"){
-                    console.log("para realizar esta operacion se necesita de un Usuario Administrador");
-                }
-
-            }else if(usuario.length === 0) {
-                console.log("Usuario o contraseña incorrectos");
-                return;
+            client = await this.connection.connect(); // Obtiene el cliente MongoDB
+    
+            // Conectarse a la base de datos admin
+            const adminDb = client.db('admin');
+            
+            // Actualiza el rol del usuario en la base de datos admin
+            const result = await adminDb.command({
+                updateUser: userName,
+                roles: [{ role: newRole, db: 'admin' }]
+            });
+    
+            console.log('Rol actualizado en la base de datos admin:', result);
+    
+            // Conectarse a la base de datos cineCampus
+            const cineCampusDb = client.db('cineCampus');
+            const usuariosColection = cineCampusDb.collection('usuarios');
+            
+            // Actualiza el rol del usuario en la colección usuarios
+            const updateResult = await usuariosColection.updateOne(
+                { nombre: userName }, // Filtro para encontrar al usuario
+                { $set: { rol: newRole } } // Actualización del campo 'rol'
+            );
+    
+            console.log('Rol actualizado en la colección usuarios:', updateResult);
+    
+        } catch (error) {
+            console.error('Error al actualizar el rol del usuario:', error);
+            throw error;
+        } finally {
+            if (client) {
+                await this.connection.close(); // Asegúrate de cerrar la conexión
             }
+        }
+    }
+    
+    async getUserDetails(user_id) {
+        let client;
+        try {
+            client = await this.connection.connect(); // Obtiene el cliente MongoDB
+            const db = client.db('cineCampus'); // Conectarse a la base de datos cineCampus
+            const adminDb = client.db('admin');
+            const usuariosColection = db.collection('usuarios'); // Accede a la colección 'usuarios'
+            
+            // Encuentra todos los documentos en la colección
+            const usuarioDetails = await usuariosColection.find({ id: user_id}).toArray();
+            
+            console.log(usuarioDetails);
+    
         } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
             throw error;
         } finally {
-            await this.connection.close();
+            if (client) {
+                await this.connection.close(); // Asegúrate de cerrar la conexión
+            }
         }
     }
 }

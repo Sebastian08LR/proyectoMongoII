@@ -40,11 +40,11 @@ Esto iniciará el servidor en `main.js` y ejecutara la función descomentada.
 La aplicación utiliza [dotenv](https://www.npmjs.com/package/dotenv) para gestionar variables de entorno. Crea un archivo `.env` en la raíz del proyecto y define las variables de entorno que se encuentran en el archivo `.envTemplate` para la correcta función de la base de datos y la conexión. Por ejemplo:
 
 ```plaintext
-MONGO_URI = 'mongodb://monorail.proxy.rlwy.net:55970/'
+MONGO_URI = 'mongodb://viaduct.proxy.rlwy.net:58329/'
 DB_NAME = 'cineCampus'
 
-MONGO_USER = 'mongo'
-MONGO_PASSWORD = 'xabdHniAGwYDdcTIFVTBJDVtXaKRlMrP'
+MONGO_USER = 'Carlos'
+MONGO_PASSWORD = '789456'
 ```
 
 ### Dependencias
@@ -56,3 +56,50 @@ MONGO_PASSWORD = 'xabdHniAGwYDdcTIFVTBJDVtXaKRlMrP'
 - **mongodb**: `^6.8.0`
   - Proporciona una interfaz para interactuar con la base de datos MongoDB.
   - [Documentación de mongodb](https://www.npmjs.com/package/mongodb)
+
+
+### Roles y Usuarios
+
+**ROLES**
+   ```javaScript
+   db.createRole(
+   {
+      role: "adminCineCampus",
+      privileges: [
+         {
+         resource: { db: "", collection: "" },
+         actions: ["find", "insert", "update", "remove"]
+         },
+         {
+         resource: { db: "", collection: "system.users" },
+         actions: ["find", "insert", "update", "remove"]
+         },
+         {
+         resource: { db: "", collection: "system.roles" },
+         actions: ["find", "insert", "update", "remove"]
+         },
+         {
+         resource: { db: "", collection: "" },
+         actions: ["createRole", "dropRole", "grantRole", "revokeRole", "createUser", "dropUser", "createDatabase", "find", "createCollection", "dropCollection", "dbStats", "collStats", "listCollections" ]
+         }
+      ],
+      roles: []
+   }
+   )
+   ```
+   **Roles de la base de datos**
+   - adminCineCampus
+   - usuarioStandard
+
+**USUARIOS**
+   ```JavaScript
+      db.createUser(
+   {
+      user: "UserName",
+      pwd: "789456",
+      roles: [
+         { role: "adminCineCampus", db: "" }
+      ]
+   }
+   )
+   ```
