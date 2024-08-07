@@ -1,27 +1,66 @@
-import  Menu  from "./js/model/menu.js";
+
 import { Pelicula } from "./js/model/peliculas.js";
 import { Usuarios } from "./js/model/usuarios.js";
 import { Boletos } from "./js/model/boletos.js";
 import { Pagos } from "./js/model/pagos.js";
 import { MongoClient, ObjectId } from 'mongodb';
 const pelicula = new Pelicula();
-//pelicula.getMovieNames()
-//pelicula.getMovieInfo(2)
-//pelicula.getMovieProyections(2);
-//pelicula.getMovieAvaliableSeats(2, 10);
-//pelicula.addProjectionToMovie(3, {fecha: new Date('2024-08-02T00:00:00.000Z'), hora: '22:30', sala: new ObjectId('000000000000000000000001')})
+
+// Get movie names
+// pelicula.getMovieNames()
+
+// Get movie info
+//pelicula.getMovieInfo([2]);
+
+// Get movie projections
+//pelicula.getMovieProyections([2]);
+
+// Get available seats
+//pelicula.getMovieAvaliableSeats([2, 10]);
+
+// Add projection to movie
+/* pelicula.addProjectionToMovie([
+  3, 
+  { 
+    fecha: new Date('2024-08-02T00:00:00.000Z'), 
+    hora: '22:30', 
+    sala: new ObjectId('000000000000000000000001') 
+  }
+]); */
+
 const usuarios = new Usuarios();
-//}usuarios.createUser("Juan", "123", "administrador", "karen123@gmail.com", null)
-//usuarios.listAllUsers();
-//usuarios.getUserDetails(5);
-//usuarios.updateUserRol("Sebastian", "usuarioStandard");
+// Create user
+//usuarios.createUser(["JuanL", "123", "administrador", "karen123@gmail.com", null]);
+
+// List all users
+// usuarios.listAllUsers()
+
+// Get user details
+//usuarios.getUserDetails([5]);
+
+// Update user role
+//usuarios.updateUserRol(["Sebastian", "usuarioStandard"]);
+
+
 const boleto = new Boletos();
-//boleto.buyTickets(2, 10, 1, "B", "Efectivo");
-//boleto.findTicketsByUser("Sebastian", "123");
+
+// Buy tickets
+//boleto.buyTickets([2, 10, 1, "B", "Efectivo"]);
+
+// Find tickets by user
+//boleto.findTicketsByUser(["Sebastian", "123"]);
+
 const pago = new Pagos();
-//pago.uncompletedPayments(3); 
-//pago.paymentManagement(3, [2]);
-//pago.completedPayments(1);
+
+// Uncompleted payments
+//pago.uncompletedPayments([3]);
+
+// Payment management
+//pago.paymentManagement([3, [2]]);
+
+// Completed payments
+//pago.completedPayments([1]);
+
 
 // Uso de cada uno de los apartados de los modulos
 

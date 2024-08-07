@@ -1,9 +1,10 @@
 import Connection from '../../db/connect/connect.js';
-import Menu from './menu.js';
+
 export class Boletos {
     constructor(username, password) {
         this.connection = new Connection(username, password);
     }
+
     /**
      * This function is responsible for buying tickets for a movie.
      * It connects to a MongoDB database, retrieves movie and user data,
@@ -11,47 +12,43 @@ export class Boletos {
      * It then creates a ticket document in the database, updates the occupied seats,
      * and creates a payment document.
      *
+     * @param {Array} params - Array containing movie_id, proyeccion_id, numAsiento, letraAsiento, metodoPago.
      * @returns {Promise<void>}
      */
-    async buyTickets(movie_id, proyeccion_id, numAsiento, letraAsiento, metodoPago) {
+    async buyTickets([movie_id, proyeccion_id, numAsiento, letraAsiento, metodoPago]) {
         let client;
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
-            // Conectarse a la base de datos admin
-            const adminDb = client.db('admin');
-
             const db = client.db('cineCampus');
-            const peliculasColection = db.collection('peliculas')  
-            const salasColection = db.collection('salas')
-            const asientosProyectionColection = db.collection('asientosProyection')
-            const usuariosColection = db.collection('usuarios')
-            const boletosColection = db.collection('boletos')
-            const pagosColection = db.collection('pagos')
+            const peliculasColection = db.collection('peliculas');  
+            const salasColection = db.collection('salas');
+            const asientosProyectionColection = db.collection('asientosProyection');
+            const usuariosColection = db.collection('usuarios');
+            const boletosColection = db.collection('boletos');
+            const pagosColection = db.collection('pagos');
             
-        
             const ultimoBoletoRegistrado = await boletosColection.findOne({}, { sort: { _id: -1 } });
-            let increment = 1;
             const nombre = process.env.MONGO_USER;
             const password = process.env.MONGO_PASSWORD;
             const usuario = await usuariosColection.find({
                 $and: [
-                    { nombre: nombre},
+                    { nombre: nombre },
                     { password: password }
                 ]
-                }).toArray();
+            }).toArray();
+
             if (usuario.length === 0) {
                 console.log("Usuario o contraseña incorrectos");
                 return;
             }
-            const usuarioRol = usuario[0].rol
-            const usuarioId = usuario[0].id
+
+            const usuarioRol = usuario[0].rol;
+            const usuarioId = usuario[0].id;
             
-            //let movie_id = 4
             let selectedMovie = await peliculasColection.findOne({ id: movie_id });
             if (selectedMovie) {
                 let proyections = selectedMovie.proyecciones;
-                //let proyeccion_id = 18
                 
                 for (let proyection of proyections) {
                     if (proyection.id === proyeccion_id) {
@@ -65,24 +62,18 @@ export class Boletos {
                                     { id_proyection: proyeccion_id }
                                 ]
                             }).toArray();
-                            if(documentoExistente.length > 0) { 
-                                if(documentoExistente[0].occupiedSeats.length >= capacidad){
+
+                            if (documentoExistente.length > 0) { 
+                                if (documentoExistente[0].occupiedSeats.length >= capacidad) {
                                     console.log("La sala está llena.");
                                     break;
                                 }
                             }
                             
-                            //const numAsiento = 3
-                            //const letraAsiento = "C"
-                            
                             letraAsiento = letraAsiento.toUpperCase();
-                           // const metodoPago = "Tarjeta Crédito"
                            
-                           // Verificar si el asiento ingresado existe en la sala asignada a la funcion
                             const asientoExiste = sala.asientos.some(asiento => asiento.numero === numAsiento && asiento.fila === letraAsiento);   
-                            if(asientoExiste){
-
-                                // agregar el asiento comprado a la funcion
+                            if (asientoExiste) {
                                 if (documentoExistente.length <= 0) {
                                     await asientosProyectionColection.insertOne({
                                         id_pelicula: movie_id,
@@ -100,27 +91,27 @@ export class Boletos {
                                             { _id: documentoExistente[0]._id },
                                             { $addToSet: { occupiedSeats: newSeat } }
                                         );
-                                        console.log(`El asiento ${newSeat} ha sido añadido.`);
                                     }
                                 }
-                                console.log(usuarioRol)
-                                // crear el boleto correspondiente
-                                if(usuarioRol === "vip"){
-                                   const boleto = await boletosColection.insertOne({
-                                            "pelicula_id": movie_id,
-                                            "proyeccion_id": proyeccion_id,
-                                            "usuario_id": usuarioId,
-                                            "asiento": {
-                                                "numero": numAsiento, 
-                                                "fila":  letraAsiento
-                                            },
-                                            "precio_total": 10.50,
-                                            "descuento_aplicado": 10,
-                                            "fecha_compra": new Date()
-                                        })
-                                    console.log(boleto)
+
+                               
+                                
+                                if (usuarioRol === "vip") {
+                                    const boleto = await boletosColection.insertOne({
+                                        "pelicula_id": movie_id,
+                                        "proyeccion_id": proyeccion_id,
+                                        "usuario_id": usuarioId,
+                                        "asiento": {
+                                            "numero": numAsiento, 
+                                            "fila": letraAsiento
+                                        },
+                                        "precio_total": 10.50,
+                                        "descuento_aplicado": 10,
+                                        "fecha_compra": new Date()
+                                    });
+                                    console.log(boleto);
                                            
-                                }else if(usuarioRol === "estandar" || usuarioRol === "administrador"){
+                                } else if (usuarioRol === "estandar" || usuarioRol === "administrador") {
                                     const boleto = await boletosColection.insertOne({
                                         "id": ultimoBoletoRegistrado.id + 1,
                                         "pelicula_id": movie_id,
@@ -128,24 +119,24 @@ export class Boletos {
                                         "usuario_id": usuarioId,
                                         "asiento": {
                                             "numero": numAsiento, 
-                                            "fila":  letraAsiento
+                                            "fila": letraAsiento
                                         },
                                         "precio_total": 10.50,
                                         "descuento_aplicado": 0,
                                         "fecha_compra": new Date()
-                                    })
-                                    console.log(boleto)         
+                                    });
+                                    console.log(boleto);         
                                 }
                                 const ultimoPagoRegistrado = await pagosColection.findOne({}, { sort: { _id: -1 } });
-                                    await pagosColection.insertOne({
-                                        "id": ultimoPagoRegistrado.id + 1,
-                                        "usuario_id": usuarioId,
-                                        "boleto_id": ultimoBoletoRegistrado.id + 1,
-                                        "monto": 10.50,
-                                        "metodo_pago": metodoPago,
-                                        "estado": "pendiente"
-                                    });
-                            }else if(!asientoExiste){
+                                await pagosColection.insertOne({
+                                    "id": ultimoPagoRegistrado.id + 1,
+                                    "usuario_id": usuarioId,
+                                    "boleto_id": ultimoBoletoRegistrado.id + 1,
+                                    "monto": 10.50,
+                                    "metodo_pago": metodoPago,
+                                    "estado": "pendiente"
+                                });
+                            } else if (!asientoExiste) {
                                 console.log("El asiento que ingresó no está disponible");
                             }
                         } else {
@@ -163,37 +154,39 @@ export class Boletos {
             await this.connection.close();
         }
     }
+
     /**
      * This function retrieves and displays the tickets purchased by a specific user.
      * It connects to a MongoDB database, retrieves user data, and fetches the corresponding boletos.
      *
-     * @async
-     * @function findTicketsByUser
+     * @param {Array} params - Array containing nombre and password.
      * @returns {Promise<void>}
      *
      * @throws Will throw an error if there is a problem connecting to the MongoDB database or retrieving data.
      *
      */
-    async findTicketsByUser(nombre, password) {
+    async findTicketsByUser([nombre, password]) {
         let client;
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
-            // Conectarse a la base de datos admin
-            const adminDb = client.db('admin');
             const db = client.db('cineCampus');  
-
-            const usuariosColection = db.collection('usuarios')
-            const boletosColection = db.collection('boletos')
-
-
+            const usuariosColection = db.collection('usuarios');
+            const boletosColection = db.collection('boletos');
+            
             const usuario = await usuariosColection.find({
                 $and: [
-                    { nombre: nombre},
+                    { nombre: nombre },
                     { password: password }
                 ]
-                }).toArray();
-            const usuarioId = usuario[0].id
+            }).toArray();
+
+            if (usuario.length === 0) {
+                console.log("Usuario o contraseña incorrectos");
+                return;
+            }
+
+            const usuarioId = usuario[0].id;
             const boletos = await boletosColection.find({ usuario_id: usuarioId }).toArray();
             console.log(boletos);
         } catch (error) {

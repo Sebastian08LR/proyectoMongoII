@@ -1,10 +1,11 @@
 import Connection from '../../db/connect/connect.js';
-import Menu from './menu.js';
 import { MongoClient, ObjectId } from 'mongodb';
+
 export class Pelicula {
     constructor(username, password) {
         this.connection = new Connection(username, password);
     }
+
     /**
      * Retrieves and displays the names of all movies in the database.
      *
@@ -16,50 +17,44 @@ export class Pelicula {
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
-            // Conectarse a la base de datos admin
-            const adminDb = client.db('admin');
             const db = client.db('cineCampus');
-            const peliculasColection = db.collection('peliculas')  
+            const peliculasColection = db.collection('peliculas');  
             const peliculas = await peliculasColection.find({}, { projection: { titulo: 1, id: 1, _id: 0 } }).toArray();
             console.log("Peliculas", peliculas);  
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
             throw error;
         } finally {
             await this.connection.close();
         }
     }
+
     /**
      * Retrieves and displays detailed information about a movie selected by the user.
      *
+     * @param {Array} params - Array containing the movie_id.
      * @returns {Promise<void>}
      * @throws Will throw an error if there is a problem connecting to the database or retrieving data.
      */
-    async getMovieInfo(movie_id){
+    async getMovieInfo([movie_id]) {
         let client;
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
-            // Conectarse a la base de datos admin
-            const adminDb = client.db('admin');
             const db = client.db('cineCampus');
-            const peliculasColection = db.collection('peliculas')  
+            const peliculasColection = db.collection('peliculas');  
 
-            //Mostrar todas las peliculas para que el usuario seleccione un id de una pelicula existente
             const pelicula = await peliculasColection.findOne(
                 { id: movie_id },
                 { projection: { _id: 0, id: 0 } }
             );
-            if(!pelicula){
-                console.log('No se encontró la pelicula con el id seleccionado.')
+            if (!pelicula) {
+                console.log('No se encontró la pelicula con el id seleccionado.');
                 return;
-            }
-            else{
+            } else {
                 console.log(pelicula);
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
             throw error;
         } finally {
@@ -67,33 +62,34 @@ export class Pelicula {
         }
     }
 
-    async getMovieProyections(movie_id){
+    /**
+     * Retrieves and displays the projections of a movie selected by the user.
+     *
+     * @param {Array} params - Array containing the movie_id.
+     * @returns {Promise<void>}
+     * @throws Will throw an error if there is a problem connecting to the database or retrieving data.
+     */
+    async getMovieProyections([movie_id]) {
         let client;
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
-            // Conectarse a la base de datos admin
-            const adminDb = client.db('admin');
             const db = client.db('cineCampus');
-            const peliculasColection = db.collection('peliculas')  
-            const salasColection = db.collection('salas')
+            const peliculasColection = db.collection('peliculas');  
 
-            //Mostrar todas las peliculas para que el usuario seleccione un id de una pelicula existente
             const pelicula = await peliculasColection.findOne(
                 { id: movie_id },
                 { projection: { _id: 0, id: 0 } }
             );
-            if(!pelicula){
-                console.log('No se encontró la pelicula con el id seleccionado.')
+            if (!pelicula) {
+                console.log('No se encontró la pelicula con el id seleccionado.');
                 return;
+            } else {
+                const proyecciones = pelicula.proyecciones;
+                console.log(proyecciones);
+                return proyecciones;
             }
-            else{
-                const proyecciones = pelicula.proyecciones
-                console.log(pelicula.proyecciones);
-                return proyecciones
-            }
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
             throw error;
         } finally {
@@ -101,37 +97,44 @@ export class Pelicula {
         }
     }
 
-    async getMovieAvaliableSeats(movie_id, proyection_id){
+    /**
+     * Retrieves and displays the available seats for a specific projection of a movie.
+     *
+     * @param {Array} params - Array containing the movie_id and projection_id.
+     * @returns {Promise<void>}
+     * @throws Will throw an error if there is a problem connecting to the database or retrieving data.
+     */
+    async getMovieAvaliableSeats([movie_id, proyection_id]) {
         let client;
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
-            // Conectarse a la base de datos admin
-            const adminDb = client.db('admin');
             const db = client.db('cineCampus');
-            const peliculasColection = db.collection('peliculas')  
-            const salasColection = db.collection('salas')
-            const asientosProyectionColection = db.collection('asientosProyection')
-
+            const peliculasColection = db.collection('peliculas');  
+            const salasColection = db.collection('salas');
+            const asientosProyectionColection = db.collection('asientosProyection');
 
             const pelicula = await peliculasColection.findOne(
                 { id: movie_id },
                 { projection: { _id: 0, id: 0 } }
             );
-            const proyecciones = pelicula.proyecciones
+
+            const proyecciones = pelicula.proyecciones;
             let sala_id; 
-            for ( let proyection of proyecciones ){
-                if(proyection.id === proyection_id){
-                    sala_id = proyection.sala
+            for (let proyection of proyecciones) {
+                if (proyection.id === proyection_id) {
+                    sala_id = proyection.sala;
                 }
             }
-    
+
             const sala = await salasColection.findOne({ _id: sala_id });
-            const occupiedSeats = await asientosProyectionColection.find({ $and: [{ id_pelicula: movie_id}, { id_proyection: proyection_id }]}).toArray();
-            if ( occupiedSeats.length === 0){
-                console.log(sala.asientos)
-            }
-            else{
+            const occupiedSeats = await asientosProyectionColection.find({ 
+                $and: [{ id_pelicula: movie_id }, { id_proyection: proyection_id }]
+            }).toArray();
+
+            if (occupiedSeats.length === 0) {
+                console.log(sala.asientos);
+            } else {
                 let occupiedSeatsSet = new Set(occupiedSeats[0].occupiedSeats);
                 let availableSeats = [];
 
@@ -142,59 +145,60 @@ export class Pelicula {
                     }
                 }
 
-            console.log(availableSeats);
+                console.log(availableSeats);
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
             throw error;
         } finally {
             await this.connection.close();
         }
     }
-    async addProjectionToMovie(movieId, newProjection) {
+
+    /**
+     * Adds a new projection to a specific movie.
+     *
+     * @param {Array} params - Array containing the movieId and newProjection.
+     * @returns {Promise<void>}
+     * @throws Will throw an error if there is a problem connecting to the database or updating data.
+     */
+    async addProjectionToMovie([movieId, newProjection]) {
         let client;
         try {
-            // Conexión a la base de datos
-            client = await this.connection.connect();
-            const db = client.db('cineCampus');
-            const peliculasColection = db.collection('peliculas');
+            client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
-            // Buscar la película por id
+            const db = client.db('cineCampus');
+            const peliculasColection = db.collection('peliculas');  
+    
             const movie = await peliculasColection.findOne({ id: movieId });
     
             if (!movie) {
                 throw new Error('Película no encontrada');
             }
     
-            // Encontrar el último id de proyección y asignar uno nuevo
             const lastProjection = movie.proyecciones[movie.proyecciones.length - 1];
             const newId = lastProjection ? lastProjection.id + 1 : 1;
     
-            // Crear la nueva proyección con el nuevo id
             const newProjectionWithId = {
                 ...newProjection,
                 id: newId
             };
     
-            // Actualizar la película con la nueva proyección
             const updateResult = await peliculasColection.updateOne(
                 { id: movieId },
                 { $push: { proyecciones: newProjectionWithId } }
             );
     
             if (updateResult.modifiedCount === 1) {
-                console.log('Proyección añadida exitosamente');
+                return console.log(updateResult);
             } else {
-                console.log('No se pudo añadir la proyección');
+                return console.log(updateResult);
             }
         } catch (error) {
             console.error('Error al agregar la proyección:', error);
             throw error;
         } finally {
-            if (client) {
-                await this.connection.close();
-            }
+            await this.connection.close();
         }
     }
 }
