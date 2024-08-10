@@ -1,20 +1,28 @@
 {
   "dependencies": {
     "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0",
     "mongodb": "^6.8.0",
-    "mongoose": "^8.5.1"
+    "mongoose": "^8.5.1",
+    "vite": "^5.4.0",
+    "vue": "^3.4.37"
   },
   "name": "proyectomongo2",
   "description": "proyectomongo 2 CineCampus",
   "version": "1.0.0",
   "main": "main.js",
-  "type": "module",
-  "devDependencies": {},
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --env-file .env main.js"
+    "dev": "node --env-file .env ./app.js",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8"
+  }
 }
