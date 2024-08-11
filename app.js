@@ -1,9 +1,12 @@
 const express = require('express');
 const path = require('path');
-
+const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
+
+// Configura CORS para permitir solicitudes desde cualquier origen
+app.use(cors());
 
 // Sirve archivos estáticos desde la carpeta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
