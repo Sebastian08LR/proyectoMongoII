@@ -7,8 +7,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 const pelicula = new Pelicula();
 
 // Get movie names
-// 
-pelicula.getMovieNames()
+// pelicula.getMovieNames()
 
 // Get movie info
 //pelicula.getMovieInfo([2]);

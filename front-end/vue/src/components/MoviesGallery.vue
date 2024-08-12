@@ -71,6 +71,8 @@
   </template>
   
   <script>
+  import { useMovieStore } from '../store/movieStore.js';
+  
   export default {
   data() {
     return {
@@ -93,9 +95,11 @@
         });
     },
     goToMovieDetail(id) {
-      console.log(id)
-      this.$router.push({ name: 'MovieDetail', params: { id: String(id) } });
-    }
+        const movieStore = useMovieStore();
+        const movie = movieStore.getMovieById(id);
+        movieStore.selectMovie(movie);
+        this.$router.push({ name: 'MovieDetail', params: { id } });
+      }
   },
   mounted() {
     this.fetchMovies();
