@@ -1,18 +1,11 @@
 <template>
   <div>
-    <MoviesGallery :movieId="'1'" :functionId="'2'" />
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import CinemaSeats from './components/CinemaSeats.vue'
-import MoviesGallery from './components/MoviesGallery.vue';
-
-
 export default {
   name: 'App',
-  components: {
-    MoviesGallery
-  }
-}
+};
 </script>
