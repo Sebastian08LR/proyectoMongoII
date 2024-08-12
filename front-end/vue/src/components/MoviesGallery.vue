@@ -93,7 +93,8 @@
         });
     },
     goToMovieDetail(id) {
-      this.$router.push({ name: 'MovieDetail', params: { id } });
+      console.log(id)
+      this.$router.push({ name: 'MovieDetail', params: { id: String(id) } });
     }
   },
   mounted() {
