@@ -40,4 +40,9 @@ appPelicula.get('/api/v4', [
     res.send(await obj.getMovieAvaliableSeats(req.query));
 });
 
+appPelicula.get('/api/v5', async (req, res) => {
+    let obj = new Pelicula;
+    res.send(await obj.getMoviesComingSoon())
+})
+
 module.exports = appPelicula;

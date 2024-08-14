@@ -52,7 +52,6 @@ class Pelicula {
                 console.log('No se encontró la pelicula con el id seleccionado.');
                 return;
             } else {
-                console.log(pelicula);
                 return pelicula
             }
         } catch (error) {
@@ -201,6 +200,27 @@ class Pelicula {
             throw error;
         } finally {
             await this.connection.close();
+        }
+    }
+    async getMoviesComingSoon() {
+        let client;
+        try {
+            client = await this.connection.connect(); // Obtiene el cliente MongoDB
+    
+            const db = client.db('cineCampus');
+            const peliculasColection = db.collection('peliculas');  
+            const peliculas = await peliculasColection.find(
+                { proyecciones: { $size: 0 } }, 
+                { projection: { titulo: 1, id: 1, imagen: 1, _id: 0 } }
+            ).toArray();
+            return peliculas;
+        } catch (error) {
+            console.error('Error al conectar o obtener datos de MongoDB:', error);
+            throw error;
+        } finally {
+            if (client) {
+                await client.close();
+            }
         }
     }
 }
