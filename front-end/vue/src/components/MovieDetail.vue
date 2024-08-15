@@ -1,34 +1,37 @@
 <template>
-  <div class="header">
-    <button class="back-button">
-      <i class="fas fa-chevron-left"></i>
-    </button>
-    <h2>Cinema Selection</h2>   
-    <button class="more-options-button">
-      <i class="fas fa-ellipsis-v"></i>
-    </button>
-  </div>
+  <headerNav></headerNav>
   <div class="MovieSelected">
    <div class="ImageContainer">
-      <div v-if="loading" class="spinner"></div>
+      <loading v-if="loading" ></loading>
       <img v-else :src="movie.imagen" alt="Movie Image">
     </div>
 
     <div class="TralierBottom" v-if="!loading">
       <button class="trailer-button">
-        <i class="fas fa-play"></i>
+        <img src="../assets/play.svg" alt=""></img>
         <span>Watch Trailer</span>
       </button>
     </div>
 
     <div class="MovieDetails">
       <p v-if="!loading">{{ movie.sinopsis }}</p>
-      <h2>Cast</h2>
-      <div class="cast">
-        <ul v-if="movie && movie.actores">
-          <li v-for="actor in movie.actores" :key="actor.id">{{ actor.nombre }}</li>
-        </ul>
+      <h2 class="castHeader">Cast</h2>
+      <loading v-if="loading"></loading>
+      <div v-if="movie && movie.actores" class="cast">
+          <div v-for="actor in movie.actores" :key="actor.id" class="actor">
+            <div class="PjIcone">
+              <img src="../assets/Ellipse.png" alt="Actor Image">
+            </div>
+            <div class="actorInfo">
+              <h3>{{ actor.nombre }}</h3>
+              <p>{{ actor.personaje }}</p>
+            </div>
+          </div>
       </div>
+    </div>
+    <div class="cinema">
+      <h2 class="cinemaHeader">Cinema</h2>
+
     </div>
 
     <div v-if="!movie && !loading">
@@ -40,7 +43,14 @@
 
 <script>
 import { useMovieStore } from '../store/movieStore';
+
+import headerNav from './headerNav.vue';
+import loading from './loading.vue';
 export default {
+  components: {
+    headerNav,
+    loading
+  },
   data() {
     return {
       movie: null,
@@ -72,7 +82,10 @@ export default {
           })
           .catch(error => console.error('Error fetching movie details:', error));
       }
-    }
+    },
+    goBack() {
+      this.$refs.headerNav.goBack();
+    },
   }
 };
 </script>
@@ -84,53 +97,10 @@ export default {
   justify-content: center;
   background-color: #000000;
 }
-.header{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  background-color: #000000;
-  color: #fff;
-  height: 5vh;
-}
-.back-button {
-  width: 40px;
-  height: 40px;
-  background-color: #000000;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.back-button i {
-  color: #ffffff;
-  font-size: 18px;
-}
-.more-options-button {
-  width: 40px;
-  height: 40px;
-  background-color: #000000;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.more-options-button i {
-  color: #ffffff;
-  font-size: 18px;
-}
-.header h2{
-  font-size: 1.3em;
-  font-weight: bold;
-}
 
 .ImageContainer{
+  display: flex;
+  justify-content: center;
   margin-bottom: 1.5vh;
   width: 95%;
   height: 30vh;
@@ -142,25 +112,35 @@ export default {
 }
 .ImageContainer img{
   width: 100%;
-  height: 100%;
+  height: 170%;
   object-fit:cover;
 }
 .TralierBottom{
   display: flex;
   justify-content: end;
-  padding-right: 5vw;
+  padding-right: 6vw;
   margin-bottom: 1vh;
 }
 .trailer-button {
+  display: flex;
   background-color: red;
   color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 5px 20px;
-  font-size: 0.8em;
+  width: 84px;
+  height: 22px;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.5em;
   cursor: pointer;
 }
-.trailer-button i {
+
+.trailer-button span{
+  font-size: 1em;
+  font-weight: bold;
+  text-wrap: nowrap;
+}
+.trailer-button img {
   margin-right: 8px;
   font-size: 1em;
 }
@@ -174,22 +154,69 @@ export default {
   flex-direction: column;
   padding-left: 3vw;
   padding-right: 3vw;
+  margin-bottom: 2.5vh;
 }
 .MovieDetails p{
-    font-size: 0.8em;
+    font-size: 12px;
 }
 .spinner {
-  position: absolute;
-  top: 20vh;
-  left: 45vw;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #fff;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  
   animation: spin 1s linear infinite;
+} 
+
+.cast{
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  justify-content: space-around;
 }
 
+.actor{
+  display: flex;
+  width: fit-content;
+  text-wrap: nowrap;
+  align-items: center;
+  margin-right: 2vw;
+}
+.castHeader{
+  margin-top: 1vh;
+  margin-bottom: 2vh;
+  font-size: 16px;
+  font-weight: bold;
+}
+.PjIcone img{
+  object-fit: contain;
+  border-radius: 25px;
+  width: 41px;
+  height: 41px;
+}
+.actorInfo{
+  font-family: "Poppins", sans-serif;
+  margin-left: 5px;
+  text-align: left;
+}
+.actor h3{
+  margin: 0;
+  font-size: 8px;
+  font-weight: bold;
+}
+
+.actor p{
+  margin-top:0;
+  margin-bottom: 0;
+  font-weight: light;
+  font-size: 8px;
+}
+.cinema{
+  padding-left: 3vw;
+  padding-right: 3vw;
+}
+.cinemaHeader{
+  margin-top: 0;
+  margin-bottom: 2vh;
+  font-size: 16px;
+  font-weight: bold;
+}
 @keyframes spin {
   0% {
     transform: rotate(0deg);
