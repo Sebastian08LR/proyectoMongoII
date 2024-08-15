@@ -19,7 +19,10 @@ class Pelicula {
     
             const db = client.db('cineCampus');
             const peliculasColection = db.collection('peliculas');  
-            const peliculas = await peliculasColection.find({}, { projection: { titulo: 1, id: 1, imagen: 1, _id: 0 } }).toArray();
+            const peliculas = await peliculasColection.find(
+                { $expr: { $gt: [{ $size: "$proyecciones" }, 0] } },
+                { projection: { titulo: 1, id: 1, imagen: 1, genero: 1,_id: 0 } }
+              ).toArray();
             return peliculas  
         } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
@@ -211,7 +214,7 @@ class Pelicula {
             const peliculasColection = db.collection('peliculas');  
             const peliculas = await peliculasColection.find(
                 { proyecciones: { $size: 0 } }, 
-                { projection: { titulo: 1, id: 1, imagen: 1, _id: 0 } }
+                { projection: { titulo: 1, id: 1, imagen: 1, genero: 1, _id: 0 } }
             ).toArray();
             return peliculas;
         } catch (error) {
