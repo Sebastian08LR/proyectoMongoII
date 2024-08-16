@@ -2,7 +2,7 @@
   <headerNav></headerNav>
   <div class="MovieSelected">
    <div class="ImageContainer">
-      <loading v-if="loading" ></loading>
+      <loading v-if="loading" route="Home" ></loading>
       <img v-else :src="movie.imagen" alt="Movie Image">
     </div>
 
@@ -31,7 +31,27 @@
     </div>
     <div class="cinema">
       <h2 class="cinemaHeader">Cinema</h2>
-
+      <div class="cinemaContainer">
+        <div class="cinemaItem" :class="{ 'selected': selectedCinema === 'CineCampus' }" @click="selectCinema('CineCampus')">
+          <div class="cinemaInfo">
+            <h3>CineCampus</h3>
+            <p>12:00 PM</p>
+          </div>
+          <img class="cinemaImage" src="https://placehold.jp/50x50.png">
+        </div>
+        <div class="cinemaItem" :class="{ 'selected': selectedCinema === 'CineLands' }" @click="selectCinema('CineLands')">
+          <div class="cinemaInfo">
+            <h3>CineLands</h3>
+            <p>14:00 PM</p>
+          </div>
+          <img class="cinemaImage" src="https://placehold.jp/50x50.png">
+        </div>
+      </div>
+    </div>
+    <div class="bookingContainer">
+      <div class="bookNow" @click="goToReservation()">
+          <h2>Book Now</h2>
+      </div>
     </div>
 
     <div v-if="!movie && !loading">
@@ -55,6 +75,7 @@ export default {
     return {
       movie: null,
       loading: true, // Variable de estado de carga
+      selectedCinema: null // Variable para seleccionar el cine
     };
   },
   computed: {
@@ -85,6 +106,12 @@ export default {
     },
     goBack() {
       this.$refs.headerNav.goBack();
+    },
+    selectCinema(cinema) {
+      this.selectedCinema = cinema;
+    },
+    goToReservation() {
+      this.$router.push({ name: 'reservation' });
     },
   }
 };
@@ -210,6 +237,70 @@ export default {
 .cinema{
   padding-left: 3vw;
   padding-right: 3vw;
+}
+.cinemaContainer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cinemaContainer img{
+  border-radius: 5px;
+  width: 48px;
+  height: 48px;
+  margin-right: 19.50px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+.cinemaItem{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color:#272727;
+  border-radius: 10px;
+  font-weight: bold;
+  margin-bottom: 1vh;
+  height: 55px;
+  width: 90%;
+}
+.cinemaItem.selected {
+  border: 2px solid red;
+}
+
+.cinemaInfo{
+  margin-left: 13.33px;
+}
+.cinemaItem h3{
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  margin: 0;
+}
+
+.cinemaItem p{
+  font-family: "Poppins", sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  margin: 0;
+}
+.bookingContainer{
+  margin-top: 54px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+.bookNow{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FE0000;
+  height: 48px;
+  width: 90%;
+  border-radius: 10px;
+}
+.bookNow h2{
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
 }
 .cinemaHeader{
   margin-top: 0;

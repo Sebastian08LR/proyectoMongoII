@@ -1,6 +1,6 @@
 <template>
      <div class="header">
-    <button class="back-button" @click="goBack()">
+    <button class="back-button" @click="goBack">
       <img src="../assets/arrow-right.svg" alt="">
     </button>
     <h2>Cinema Selection</h2>   
@@ -11,7 +11,8 @@
 </template>
 
 <script>
-    import { useMovieStore } from '../store/movieStore';
+import { useMovieStore } from '../store/movieStore';
+
 export default {
   data() {
     return {
@@ -22,14 +23,21 @@ export default {
   computed: {
     movieId() {
       return this.$route.params.id; // Obtén el ID desde la URL
+    },
+    currentRouteName() {
+      return this.$route.name; // Obtén el nombre de la ruta actual
     }
   },
   methods: {
     goBack() {
-          this.$router.push({ name: 'Home'});
-        
+      switch(this.currentRouteName) {
+        case 'reservation':
+          this.$router.push(`/movie/${this.movieId}`);
+          break;
+        default:
+          this.$router.push('/'); // Asumiendo que '/' es la ruta Home
+      }
     },
-
   }
 };
 </script>

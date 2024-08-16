@@ -327,6 +327,7 @@ export default {
 
   .see-all {
     color: #ff0000;
+    margin-right: 5vw;
   }
 
   .movies-slider {
@@ -430,7 +431,8 @@ export default {
     position: fixed;
     justify-content: space-around;
     padding: 25px 0;
-    border-radius: 1em;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
     width: 100%;
     bottom: 0;
     background-color: #232323;
