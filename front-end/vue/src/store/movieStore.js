@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-export const useMovieStore = defineStore('movie', {
+export const useMovieStore = defineStore('movies', {
   state: () => ({
     movies: [],
     selectedMovie: null,
@@ -25,8 +25,7 @@ export const useMovieStore = defineStore('movie', {
     }
   },
   getters: {
-    getMovieById: (state) => {
-      return (id) => state.movies.find(movie => movie.id === id);
-    }
+    moviesArray: (state) => state.movies,
+    selectedMovie: (state) => state.selectedMovie 
   }
 });

@@ -40,14 +40,15 @@
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         >
-          <swiper-slide v-for="movie in movies" :key="movie.id" @click="goToMovieDetail(movie.id)">
+          <swiper-slide v-for="movie in moviesArray" :key="movie.id" @click="goToMovieDetail(movie.id)">
             <img :src="movie.imagen" :alt="movie.titulo" class="movie-image" />
+            {{ console.log(movie) }}
           </swiper-slide>
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
         <div class="movie-info">
-          <h2 class="movie-title">{{ currentMovie.titulo }}</h2>
-          <p class="movie-genre">{{ currentMovie.genero }}</p>
+          <!-- <h2 class="movie-title">{{ currentMovie.titulo }}</h2>
+          <p class="movie-genre">{{ currentMovie.genero }}</p> -->
         </div>
       </div>
     </section>
@@ -96,10 +97,13 @@
 <script>
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Pagination } from 'swiper/modules';
-import { computed } from 'vue';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { useRouter } from 'vue-router';
+import  { useMovieStore } from '../store/movieStore.js';
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+
 
 export default {
   components: {
@@ -107,40 +111,31 @@ export default {
     SwiperSlide,
   },
   setup() {
+    const movieStore = useMovieStore();
     const router = useRouter();
-
+    const { moviesArray } = storeToRefs(movieStore);
+    onMounted(()=>{
+      movieStore.fetchMovies();
+    })
     return {
       modules: [Pagination],
+      moviesArray,
     };
   },
   data() {
     return {
-      movies: [],
       moviesComingSoon: [],
       loading: true,
       error: null,
       currentIndex: 0,
     };
   },
-  computed: {
+    computed: {
     currentMovie() {
-      return this.movies[this.currentIndex] || {};
+      return this.movieArray[this.currentIndex] || {};
     },
-  },
+  }, 
   methods: {
-    fetchMoviesPlaying() {
-      fetch('http://localhost:3001/movies/api/v1')
-        .then(response => response.json())
-        .then(data => {
-          this.movies = data;
-          console.log(this.movies)
-          this.loading = false;
-        })
-        .catch(error => {
-          this.error = 'Error loading movies';
-          this.loading = false;
-        });
-    },
     fetchMoviesComingSoon() {
       fetch('http://localhost:3001/movies/api/v5')
         .then(response => response.json())
@@ -163,8 +158,8 @@ export default {
       this.currentIndex = swiper.realIndex;
     },
   },
+  
   mounted() {
-    this.fetchMoviesPlaying();
     this.fetchMoviesComingSoon();
   }
 };
