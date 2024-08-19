@@ -112,6 +112,7 @@ class Pelicula {
         const movie_id = parseInt(movieInfo.movieId);
         const proyection_id = parseInt(movieInfo.functionId);
         let client;
+    
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
     
@@ -119,38 +120,46 @@ class Pelicula {
             const peliculasColection = db.collection('peliculas');  
             const salasColection = db.collection('salas');
             const asientosProyectionColection = db.collection('asientosProyection');
-
+    
+            // Obtener la película y la proyección
             const pelicula = await peliculasColection.findOne(
                 { id: movie_id },
                 { projection: { _id: 0, id: 0 } }
             );
+            
             const proyecciones = pelicula.proyecciones;
             let sala_id; 
+    
             for (let proyection of proyecciones) {
                 if (proyection.id === proyection_id) {
                     sala_id = proyection.sala;
                 }
             }
-
+    
+            // Obtener la sala y los asientos ocupados
             const sala = await salasColection.findOne({ _id: sala_id });
             const occupiedSeats = await asientosProyectionColection.find({ 
                 $and: [{ id_pelicula: movie_id }, { id_proyection: proyection_id }]
             }).toArray();
-
-            if (occupiedSeats.length === 0) {
-                return sala.asientos
-            } else {
-                let occupiedSeatsSet = new Set(occupiedSeats[0].occupiedSeats);
-                let availableSeats = [];
-
-                for (let seat of sala.asientos) {
-                    const seatInAsientos = `${seat.numero}${seat.fila}`;
-                    if (!occupiedSeatsSet.has(seatInAsientos)) {
-                        availableSeats.push(seat);
-                    }
-                }
-                return availableSeats;
+    
+            // Crear un Set con los asientos ocupados para búsqueda eficiente
+            let occupiedSeatsSet = new Set();
+            if (occupiedSeats.length > 0) {
+                occupiedSeatsSet = new Set(occupiedSeats[0].occupiedSeats);
             }
+    
+            // Construir el array de asientos con su estado
+            const seatsWithStatus = sala.asientos.map((seat) => {
+                const seatInAsientos = `${seat.numero}${seat.fila}`;
+                const estado = occupiedSeatsSet.has(seatInAsientos) ? 'ocupado' : 'disponible';
+                return {
+                    ...seat,
+                    estado
+                };
+            });
+    
+            return seatsWithStatus;
+    
         } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);
             throw error;
@@ -158,6 +167,7 @@ class Pelicula {
             await this.connection.close();
         }
     }
+    
 
     /**
      * Adds a new projection to a specific movie.
