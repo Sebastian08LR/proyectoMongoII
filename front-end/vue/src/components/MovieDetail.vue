@@ -1,4 +1,5 @@
 <template>
+  <diV class="detailsContainer">
   <headerNav></headerNav>
   <div class="MovieSelected">
    <div class="ImageContainer">
@@ -53,6 +54,7 @@
           <h2>Book Now</h2>
       </div>
     </div>
+  </div>
 
     <div v-if="!movie && !loading">
       <p>Loading movie details...</p>
@@ -69,7 +71,7 @@ import loading from './loading.vue';
 export default {
   components: {
     headerNav,
-    loading
+    loading,
   },
   data() {
     return {
@@ -88,12 +90,6 @@ export default {
   },
   methods: {
     fetchMovieDetails() {
-      const movieStore = useMovieStore();
-      const selectedMovie = movieStore.getMovieById(parseInt(this.movieId)); // Busca la película en el store
-      
-      if (selectedMovie) {
-        this.movie = selectedMovie; // Si la película está en el store, úsala
-      } else {
         // Si no está en el store, haz la petición a la API
         fetch(`http://localhost:3001/movies/api/v2?id=${this.movieId}`)
           .then(response => response.json())
@@ -102,7 +98,7 @@ export default {
             this.loading = false; // Finaliza la carga cuando se reciben los datos
           })
           .catch(error => console.error('Error fetching movie details:', error));
-      }
+      
     },
     goBack() {
       this.$refs.headerNav.goBack();
@@ -118,11 +114,17 @@ export default {
 </script>
 
 <style scoped>
+.detailsContainer{
+  height: 100vh;
+  background-color: #121212;
+  display: flex;
+  flex-direction: column;
+}
 .MovieSelected{
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #000000;
+  background-color: #121212;
 }
 
 .ImageContainer{
@@ -237,6 +239,7 @@ export default {
 .cinema{
   padding-left: 3vw;
   padding-right: 3vw;
+  background-color: #121212;
 }
 .cinemaContainer{
   display: flex;
@@ -286,6 +289,7 @@ export default {
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
+  background-color: #121212;
 }
 .bookNow{
   display: flex;

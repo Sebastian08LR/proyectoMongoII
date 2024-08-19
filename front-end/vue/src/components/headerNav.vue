@@ -1,9 +1,9 @@
 <template>
-     <div class="header">
+  <div class="header">
     <button class="back-button" @click="goBack">
       <img src="../assets/arrow-right.svg" alt="">
     </button>
-    <h2>Cinema Selection</h2>   
+    <h2>{{ headerTitle }}</h2>   
     <button class="more-options-button">
        <img src="../assets/more-vertical.svg" alt="">
     </button>
@@ -17,15 +17,23 @@ export default {
   data() {
     return {
       movie: null,
-      loading: true, // Variable de estado de carga
+      loading: true,
     };
   },
   computed: {
     movieId() {
-      return this.$route.params.id; // Obtén el ID desde la URL
+      return this.$route.params.id;
     },
     currentRouteName() {
-      return this.$route.name; // Obtén el nombre de la ruta actual
+      return this.$route.name;
+    },
+    headerTitle() {
+      switch(this.currentRouteName) {
+        case 'reservation':
+          return 'Choose Seat';
+        default:
+          return 'Cinema Selection';
+      }
     }
   },
   methods: {
@@ -35,7 +43,7 @@ export default {
           this.$router.push(`/movie/${this.movieId}`);
           break;
         default:
-          this.$router.push('/'); // Asumiendo que '/' es la ruta Home
+          this.$router.push('/');
       }
     },
   }
@@ -48,14 +56,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background-color: #000000;
+  background-color: #121212;
   color: #fff;
   height: 5vh;
 }
 .back-button {
   width: 40px;
   height: 40px;
-  background-color: #000000;
+  background-color: #121212;
   border: none;
   border-radius: 50%;
   display: flex;
@@ -71,7 +79,7 @@ export default {
 .more-options-button {
   width: 40px;
   height: 40px;
-  background-color: #000000;
+  background-color: #121212;
   border: none;
   border-radius: 50%;
   display: flex;
