@@ -23,6 +23,9 @@
                 <p>Selected</p>
             </div>
         </div>
+        <div class="dateTimeFunctionContainer">
+            <proyections/>
+        </div>
         
     </div>
 </template>
@@ -31,11 +34,13 @@
     import seatsLayout from './seatsLayout.vue';
     import loading from './loading.vue'
     import headerNav from './headerNav.vue';
+    import proyections from './proyections.vue';
     export default {
         components: {
             loading,
             headerNav,
-            seatsLayout
+            seatsLayout,
+            proyections,
         },
         data() {
         return {
