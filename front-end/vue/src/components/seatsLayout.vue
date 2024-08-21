@@ -1,9 +1,14 @@
 <template>
   <div class="seat-container">
-    <div v-for="(fila, letra) in groupedSeats" :key="letra" :class="['seat-row', {'extra-space': letra === 'C'}]">
+    <div v-for="(fila, letra) in groupedSeats" :key="letra" :class="['seat-row', { 'extra-space': letra === 'C' }]">
       <div class="row-letter">{{ letra }}</div>
-      <div v-for="seat in fila" :key="seat.numero" :class="['seat', getSeatClass(seat)]" @click="toggleSeat(seat)">
-        <span v-if="seat.selected">{{ seat.numero }}</span>
+      <div
+        v-for="seat in fila"
+        :key="seat"
+        :class="['seat', getSeatClass(seat)]"
+        @click="toggleSeat(seat, index)"
+      >
+        <span>{{ seat.numero }}</span>
       </div>
     </div>
   </div>
@@ -21,8 +26,8 @@ export default {
   },
   data() {
     return {
-      selectedSeats: []
-    }
+      selectedSeats: [] // Almacenar aquí los asientos seleccionados
+    };
   },
   computed: {
     groupedSeats() {
@@ -31,23 +36,39 @@ export default {
         if (!grouped[seat.fila]) {
           grouped[seat.fila] = [];
         }
-        grouped[seat.fila].push({ ...seat, selected: false });
+        grouped[seat.fila].push(seat);
       });
       return grouped;
     }
   },
   methods: {
     getSeatClass(seat) {
-      if (seat.selected) return 'selected';
-      return seat.estado;
+      // Verificar si el asiento está seleccionado
+      const isSelected = this.selectedSeats.find(
+        (selectedSeat) =>
+          selectedSeat.fila === seat.fila && selectedSeat.numero === seat.numero
+      );
+      return isSelected ? "selected" : seat.estado;
     },
     toggleSeat(seat) {
       if (seat.estado === 'disponible') {
-        seat.selected = !seat.selected;
+        // Buscar el índice del asiento en la lista de seleccionados
+        const seatIndex = this.selectedSeats.findIndex(
+          selectedSeat => selectedSeat.fila === seat.fila && selectedSeat.numero === seat.numero
+        );
+
+        if (seatIndex > -1) {
+          // Si ya está seleccionado, deseleccionarlo
+          this.selectedSeats.splice(seatIndex, 1);
+        } else {
+          // Si no está seleccionado, agregarlo a la lista
+          this.selectedSeats.push({ fila: seat.fila, numero: seat.numero });
+        }
       }
     }
+
   }
-}
+};
 </script>
 
 <style scoped>
@@ -88,10 +109,12 @@ export default {
 
 .seat.disponible {
   background-color: #323232;
+  color: #323232;
 }
 
 .seat.ocupado {
   background-color: #CECECE;
+  color: #CECECE;
 }
 
 .seat.selected {

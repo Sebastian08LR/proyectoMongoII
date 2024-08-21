@@ -6,7 +6,7 @@
             <p>Screen this way</p>
         </div>
         <div class="selectSeatSection">
-            <loading v-if="loading"/>
+            <loading v-if="loading"></loading>
             <seatsLayout v-if="!loading" :seats="seatsData"/>
         </div>
         <div class="statusContainer">
@@ -26,7 +26,13 @@
         <div class="dateTimeFunctionContainer">
             <proyections/>
         </div>
-        
+        <div class="confirmSeats">
+            <div class="price">
+                <h3>Price</h3>
+                <h2>$24.99</h2>
+            </div>
+            <button class="BuyTicketsBtn">Buy Tickets</button>
+        </div>
     </div>
 </template>
 
@@ -71,15 +77,8 @@
 </script>
 
 
-<style scoped>
+<style>
     .spinner {  
-    justify-self: center;
-    align-self: center;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #fff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
     animation: spin 1s linear infinite;
     }
     .buySeat{
@@ -106,6 +105,8 @@
         font-size: 12px;
     }
     .selectSeatSection{
+        display: flex;
+        justify-content: center;
         margin-top: 41px;
         background-color: #121212;
     }
@@ -147,4 +148,28 @@
         background-color: #FE0000;
         border-radius: 50%;
     }
+    .confirmSeats{
+        display: flex;
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-bottom: 38px;
+        justify-content: space-between;
+    }
+    .BuyTicketsBtn{
+        width: 67%;
+        height: 53px;
+        background-color: #FE0000;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .price h2{
+        margin: 0;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .price h3{
+        margin: 0;
+        font-size: 18px;
+    }
+
 </style>
