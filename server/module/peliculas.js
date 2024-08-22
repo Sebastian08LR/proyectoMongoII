@@ -49,7 +49,7 @@ class Pelicula {
             const peliculasColection = db.collection('peliculas');  
             const pelicula = await peliculasColection.findOne(
                 { id: movie_id },
-                { projection: { _id: 0, id: 0 } }
+                { projection: { _id: 0} }
             );
             if (!pelicula) {
                 console.log('No se encontró la pelicula con el id seleccionado.');
@@ -73,7 +73,7 @@ class Pelicula {
      * @throws Will throw an error if there is a problem connecting to the database or retrieving data.
      */
     async getMovieProyections(movieId) {
-        const movie_id = parseInt(movieId.id);
+        const movie_id = parseInt(movieId.movieId);
         let client;
         try {
             client = await this.connection.connect(); // Obtiene el cliente MongoDB
@@ -111,6 +111,8 @@ class Pelicula {
     async getMovieAvaliableSeats(movieInfo) {
         const movie_id = parseInt(movieInfo.movieId);
         const proyection_id = parseInt(movieInfo.functionId);
+
+        console.log(movie_id, proyection_id)
         let client;
     
         try {
@@ -135,7 +137,7 @@ class Pelicula {
                     sala_id = proyection.sala;
                 }
             }
-    
+            console.log(sala_id);
             // Obtener la sala y los asientos ocupados
             const sala = await salasColection.findOne({ _id: sala_id });
             const occupiedSeats = await asientosProyectionColection.find({ 
@@ -147,7 +149,7 @@ class Pelicula {
             if (occupiedSeats.length > 0) {
                 occupiedSeatsSet = new Set(occupiedSeats[0].occupiedSeats);
             }
-    
+            console.log(sala)
             // Construir el array de asientos con su estado
             const seatsWithStatus = sala.asientos.map((seat) => {
                 const seatInAsientos = `${seat.numero}${seat.fila}`;

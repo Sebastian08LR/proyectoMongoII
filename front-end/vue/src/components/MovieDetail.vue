@@ -19,6 +19,7 @@
         <h2 class="castHeader">Cast</h2>
         <loading v-if="loading"></loading>
         <div v-if="movie && movie.actores" class="cast">
+          {{ console.log(movie) }}
           <div v-for="actor in movie.actores" :key="actor.id" class="actor">
             <div class="PjIcone">
               <img src="../assets/Ellipse.png" alt="Actor Image">
@@ -50,7 +51,7 @@
         </div>
       </div>
       <div class="bookingContainer">
-        <button class="bookNow" @click="goToReservation" :disabled="!selectedCinema">
+        <button class="bookNow" @click="goToReservation(movie.id)" :disabled="!selectedCinema">
           <h2>Book Now</h2>
         </button>
       </div>
@@ -100,9 +101,9 @@ export default {
     selectCinema(cinema) {
       this.selectedCinema = cinema;
     },
-    goToReservation() {
+    goToReservation(movieId) {
       if (this.selectedCinema) {
-        this.$router.push({ name: 'reservation' });
+        this.$router.push({ name: 'reservation', params: { movieId }  });
       }
     },
   }

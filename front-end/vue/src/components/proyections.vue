@@ -14,11 +14,11 @@
     <div class="horarios" v-if="diaSeleccionado">
       <div
         v-for="horario in horariosDelDiaSeleccionado"
-        :key="horario"
+        :key="horario.id"
         @click="seleccionarHorario(horario)"
-        :class="{ active: horarioSeleccionado === horario }"
+        :class="{ active: horarioSeleccionado?.id === horario.id }"
       >
-        <h2>{{ horario }}</h2>
+        <h2>{{ horario.hora }}</h2>
         <p>$ 5.99</p>
       </div>
     </div>
@@ -26,101 +26,24 @@
 </template>
 
 <script>
+import { useSeatsStore } from '../store/reservationStore.js';
+import { storeToRefs } from 'pinia';
 export default {
-  data() {
+  setup() {
+    const seatsStore = useSeatsStore();
+    const { diaSeleccionado, horarioSeleccionado, diasUnicos, horariosDelDiaSeleccionado } = storeToRefs(seatsStore);
+
+    const { seleccionarDia, seleccionarHorario } = seatsStore;
+
     return {
-      funciones: [
-        {
-          id: 1,
-          fecha: "2024-11-10T19:00:00.000Z",
-          hora: "14:00",
-          sala: "000000000000000000000001"
-        },
-        {
-          id: 2,
-          fecha: "2024-11-10T22:00:00.000Z",
-          hora: "17:00",
-          sala: "000000000000000000000001"
-        },
-        {
-          id: 3,
-          fecha: "2024-11-10T22:00:00.000Z",
-          hora: "20:00",
-          sala: "000000000000000000000001"
-        },
-        {
-          id: 4,
-          fecha: "2024-12-11T20:00:00.000Z",
-          hora: "15:00",
-          sala: "000000000000000000000002"
-        },
-        {
-          id: 5,
-          fecha: "2024-12-11T23:00:00.000Z",
-          hora: "18:00",
-          sala: "000000000000000000000002"
-        }
-      ],
-      diaSeleccionado: null,
-      horarioSeleccionado: null
+      diaSeleccionado,
+      horarioSeleccionado,
+      diasUnicos,
+      horariosDelDiaSeleccionado,
+      seleccionarDia,
+      seleccionarHorario
     };
   },
-  computed: {
-    funcionesFiltradas() {
-      const hoy = new Date();
-      console.log(hoy)
-      console.log(hoy.getUTCHours())
-      return this.funciones.filter(funcion => {
-        const fechaFuncion = new Date(funcion.fecha);
-        console.log(fechaFuncion)
-        console.log(fechaFuncion.getUTCHours())
-        return fechaFuncion >= hoy; // Filtrar funciones que no han pasado
-      });
-    },
-    diasUnicos() {
-      const diasUnicos = new Map();
-      this.funcionesFiltradas.forEach(funcion => {
-        const fecha = funcion.fecha.slice(0, 10); // Obtener solo la fecha sin la hora
-        if (!diasUnicos.has(fecha)) {
-          const date = new Date(funcion.fecha);
-          diasUnicos.set(fecha, {
-            fecha,
-            nombreDia: this.obtenerNombreDia(funcion.fecha),
-            numeroDia: date.getDate()
-          });
-        }
-      });
-      return Array.from(diasUnicos.values());
-    },
-    horariosDelDiaSeleccionado() {
-      if (!this.diaSeleccionado) return [];
-      return this.funcionesFiltradas
-        .filter(f => f.fecha.slice(0, 10) === this.diaSeleccionado)
-        .map(f => f.hora);
-    }
-  },
-  methods: {
-    seleccionarDia(fecha) {
-      this.diaSeleccionado = fecha;
-      const horarios = this.horariosDelDiaSeleccionado;
-      if (horarios.length > 0) {
-        this.horarioSeleccionado = horarios[0]; // Seleccionar automáticamente el primer horario
-      }
-    },
-    seleccionarHorario(horario) {
-      this.horarioSeleccionado = horario;
-    },
-    obtenerNombreDia(fecha) {
-      const dias = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      return dias[new Date(fecha).getDay()];
-    }
-  },
-  mounted() {
-    // Seleccionar automáticamente el día más cercano a la fecha actual
-    if (this.diasUnicos.length > 0) {
-      this.seleccionarDia(this.diasUnicos[0].fecha);
-    }
-  }
 };
 </script>
 

@@ -17,7 +17,7 @@ const routes = [
     props: true //Permite el uso de los props con el fin de enviar los id's internos para realizar los fetch
   },
   {
-    path: '/reservation/:id',
+    path: '/reservation/:movieId',
     name: 'reservation',
     component: Reservation,
     props: true //Permite el uso de los props con el fin de enviar los id's internos para realizar los fetch

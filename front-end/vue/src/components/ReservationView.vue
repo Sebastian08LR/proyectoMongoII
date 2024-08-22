@@ -6,8 +6,8 @@
             <p>Screen this way</p>
         </div>
         <div class="selectSeatSection">
-            <loading v-if="loading"></loading>
-            <seatsLayout v-if="!loading" :seats="seatsData"/>
+            <loading v-if="isLoading"></loading>
+            <seatsLayout v-if="!isLoading" :seats="seatsData"/>
         </div>
         <div class="statusContainer">
             <div class="seatStatus">
@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="dateTimeFunctionContainer">
-            <proyections/>
+            <proyections v-if="!isLoading"/>
         </div>
         <div class="confirmSeats">
             <div class="price">
@@ -37,43 +37,59 @@
 </template>
 
 <script>
-    import seatsLayout from './seatsLayout.vue';
-    import loading from './loading.vue'
-    import headerNav from './headerNav.vue';
-    import proyections from './proyections.vue';
-    export default {
-        components: {
-            loading,
-            headerNav,
-            seatsLayout,
-            proyections,
-        },
-        data() {
-        return {
-                seatsData: [],
-                loading: true,
-                error: null
-            };
-        },
-        methods: {
-        getSeats(){
-                fetch('http://localhost:3001/movies/api/v4?movieId=1&functionId=5')
-        .then(response => response.json())
-        .then(data => {
-          this.seatsData = data;
-          this.loading = false;
-        })
-        .catch(error => {
-          this.error = 'Error loading movies';
-          this.loading = false;
-        });
-            }
-        },
-        mounted() {
-            this.getSeats();
-        }
+import seatsLayout from './seatsLayout.vue';
+import loading from './loading.vue'
+import headerNav from './headerNav.vue';
+import proyections from './proyections.vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { onMounted, ref, computed, watch} from 'vue';
+import { useSeatsStore } from '../store/reservationStore.js';
 
-    }
+export default {
+    components: {
+        loading,
+        headerNav,
+        seatsLayout,
+        proyections,
+    },
+    setup() {
+        const seatsStore = useSeatsStore();
+        const { seatsData, isLoading, error, functions } = storeToRefs(seatsStore);
+        const { getSeats, seleccionarDia, seleccionarHorario } = seatsStore;
+
+        // Accedemos a la ruta actual
+        const route = useRoute();
+        const router = useRouter();
+
+        // Extraemos el movieId de los parámetros de la URL
+        const movieId = route.params.movieId;
+
+        const functionId = computed(() => seatsStore.horarioSeleccionado?.id);
+
+        onMounted(() => {
+        seatsStore.getMovieFunctions(movieId);
+        if (functionId.value) {
+            seatsStore.getSeats(movieId, functionId.value);
+        }
+        });
+
+        // Watch para actualizar los asientos cuando cambie el horario seleccionado
+        watch(() => functionId.value, (newFunctionId) => {
+        if (newFunctionId) {
+            seatsStore.getSeats(movieId, newFunctionId);
+        }
+        });
+
+        return {
+            seatsData,
+            functions,
+            isLoading,
+            error,
+            getSeats
+        };
+    },
+}
 </script>
 
 
@@ -83,6 +99,9 @@
     }
     .buySeat{
         background-color: #121212;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
     }
     .screenConrainer{
         background-color: #121212;
@@ -171,5 +190,10 @@
         margin: 0;
         font-size: 18px;
     }
-
+    .dateTimeFunctionContainer{
+        background-color: #121212;
+    }
+    .confirmSeats{
+        background-color: #121212;
+    }
 </style>

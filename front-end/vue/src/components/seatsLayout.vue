@@ -15,6 +15,9 @@
 </template>
 
 <script>
+import { useSeatsStore } from '../store/reservationStore.js';
+import { storeToRefs } from 'pinia';
+
 export default {
   name: 'SeatLayout',
   props: {
@@ -24,51 +27,34 @@ export default {
       default: () => []
     }
   },
-  data() {
-    return {
-      selectedSeats: [] // Almacenar aquí los asientos seleccionados
-    };
-  },
-  computed: {
-    groupedSeats() {
-      const grouped = {};
-      this.seats.forEach(seat => {
-        if (!grouped[seat.fila]) {
-          grouped[seat.fila] = [];
-        }
-        grouped[seat.fila].push(seat);
-      });
-      return grouped;
-    }
-  },
-  methods: {
-    getSeatClass(seat) {
+  setup() {
+    const seatsStore = useSeatsStore();
+    const { selectedSeats, getGroupedSeats } = storeToRefs(seatsStore);
+    const { toggleSeat } = seatsStore;
+
+    const getSeatClass = (seat) => {
       // Verificar si el asiento está seleccionado
-      const isSelected = this.selectedSeats.find(
+      const isSelected = selectedSeats.value.find(
         (selectedSeat) =>
           selectedSeat.fila === seat.fila && selectedSeat.numero === seat.numero
       );
       return isSelected ? "selected" : seat.estado;
-    },
-    toggleSeat(seat) {
-      if (seat.estado === 'disponible') {
-        // Buscar el índice del asiento en la lista de seleccionados
-        const seatIndex = this.selectedSeats.findIndex(
-          selectedSeat => selectedSeat.fila === seat.fila && selectedSeat.numero === seat.numero
-        );
+    };
 
-        if (seatIndex > -1) {
-          // Si ya está seleccionado, deseleccionarlo
-          this.selectedSeats.splice(seatIndex, 1);
-        } else {
-          // Si no está seleccionado, agregarlo a la lista
-          this.selectedSeats.push({ fila: seat.fila, numero: seat.numero });
-        }
-      }
+    return {
+      selectedSeats,
+      getGroupedSeats,
+      toggleSeat,
+      getSeatClass,
+    };
+  },
+  computed: {
+    groupedSeats() {
+      return this.getGroupedSeats;
     }
-
-  }
-};
+  },
+  // ... el resto del componente
+}
 </script>
 
 <style scoped>

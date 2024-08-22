@@ -21,8 +21,7 @@
     </div>
 
     <section class="section now-playing">
-      <div v-if="loading" class="loading">Loading movies...</div>
-      <div v-else-if="error" class="error">{{ error }}</div>
+      <div v-if="isLoading" class="loading">Loading movies...</div>
       <div v-else>
         <div class="section-header">
           <h2>Now playing</h2>
@@ -58,10 +57,9 @@
         <h2>Coming soon</h2>
         <a href="#" class="see-all">See all</a>
       </div>
-      <div v-if="loading" class="loading">Loading...</div>
-      <div v-else-if="error" class="error">{{ error }}</div>
+      <div v-if="isLoading" class="loading">Loading...</div>
       <div v-else class="comingSoonGallery">
-        <div v-for="movie in moviesComingSoon" :key="movie.id" class="cardContainer">
+        <div v-for="movie in moviesComingSoonArray" :key="movie.id" class="cardContainer">
           <div class="commingSoonCard" @click="goToMovieDetail(movie.id)">
             <img :src="movie.imagen" :alt="movie.titulo" class="comingSoonImage" />
             <div class="comingSoonInfo">
@@ -102,7 +100,7 @@ import 'swiper/css/pagination';
 import { useRouter } from 'vue-router';
 import  { useMovieStore } from '../store/movieStore.js';
 import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 
 export default {
@@ -113,41 +111,31 @@ export default {
   setup() {
     const movieStore = useMovieStore();
     const router = useRouter();
-    const { moviesArray } = storeToRefs(movieStore);
+    const { moviesArray, isLoading, moviesComingSoonArray } = storeToRefs(movieStore);
     onMounted(()=>{
       movieStore.fetchMovies();
+      movieStore.fetchMoviesComingSoon();
     })
     return {
       modules: [Pagination],
       moviesArray,
+      moviesComingSoonArray,
+      isLoading,
     };
   },
   data() {
     return {
-      moviesComingSoon: [],
-      loading: true,
       error: null,
       currentIndex: 0,
     };
   },
-    computed: {
-    currentMovie() {
-      return this.movieArray[this.currentIndex] || {};
+      computed: {
+      currentMovie() {
+        return this.moviesArray[this.currentIndex] || {};
     },
   }, 
   methods: {
-    fetchMoviesComingSoon() {
-      fetch('http://localhost:3001/movies/api/v5')
-        .then(response => response.json())
-        .then(data => {
-          this.moviesComingSoon = data;
-          this.loading = false;
-        })
-        .catch(error => {
-          this.error = 'Error loading movies';
-          this.loading = false;
-        });
-    },
+    
     goToMovieDetail(id) {
       this.$router.push({ name: 'MovieDetail', params: { id } });
     },
@@ -158,10 +146,7 @@ export default {
       this.currentIndex = swiper.realIndex;
     },
   },
-  
-  mounted() {
-    this.fetchMoviesComingSoon();
-  }
+ 
 };
 </script>
   
