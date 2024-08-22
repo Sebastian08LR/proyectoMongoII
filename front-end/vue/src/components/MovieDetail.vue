@@ -73,6 +73,7 @@ export default {
     headerNav,
     loading,
   },
+  
   data() {
     return {
       movie: null,

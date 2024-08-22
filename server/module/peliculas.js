@@ -149,18 +149,27 @@ class Pelicula {
             if (occupiedSeats.length > 0) {
                 occupiedSeatsSet = new Set(occupiedSeats[0].occupiedSeats);
             }
-            console.log(sala)
-            // Construir el array de asientos con su estado
-            const seatsWithStatus = sala.asientos.map((seat) => {
-                const seatInAsientos = `${seat.numero}${seat.fila}`;
-                const estado = occupiedSeatsSet.has(seatInAsientos) ? 'ocupado' : 'disponible';
+
+            try{
+                const seatsWithStatus = sala.asientos.map((seat) => {
+                    const seatInAsientos = `${seat.numero}${seat.fila}`;
+                    const estado = occupiedSeatsSet.has(seatInAsientos) ? 'ocupado' : 'disponible';
+                    return {
+                        ...seat,
+                        estado
+                    };
+                });
+                return seatsWithStatus;
+            }
+            catch(e) {
                 return {
-                    ...seat,
-                    estado
-                };
-            });
+                    erorr: "Not found",
+                    message: "No se encontró la sala"
+                }
+            }
+            // Construir el array de asientos con su estado
     
-            return seatsWithStatus;
+            
     
         } catch (error) {
             console.error('Error al conectar o obtener datos de MongoDB:', error);

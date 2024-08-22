@@ -11,41 +11,34 @@
 </template>
 
 <script>
-import { useMovieStore } from '../store/movieStore';
-
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref, computed, watch} from 'vue';
 export default {
-  data() {
-    return {
-      movie: null,
-      loading: true,
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+
+    const goBack = () => {
+      if (route.name === 'reservation') {
+        const movieId = route.params.movieId;
+        if (movieId) {
+          router.push(`/movie/${movieId}`);
+        } else {
+          router.push('/'); // Fallback a la página principal si no hay movieId
+        }
+      } else {
+        router.push('/');
+      }
     };
-  },
-  computed: {
-    movieId() {
-      return this.$route.params.id;
-    },
-    currentRouteName() {
-      return this.$route.name;
-    },
-    headerTitle() {
-      switch(this.currentRouteName) {
-        case 'reservation':
-          return 'Choose Seat';
-        default:
-          return 'Cinema Selection';
-      }
-    }
-  },
-  methods: {
-    goBack() {
-      switch(this.currentRouteName) {
-        case 'reservation':
-          this.$router.push(`/movie/${this.movieId}`);
-          break;
-        default:
-          this.$router.push('/');
-      }
-    },
+
+    const headerTitle = computed(() => {
+      return route.name === 'reservation' ? 'Choose Seat' : 'Cinema Selection';
+    });
+
+    return {
+      goBack,
+      headerTitle,
+    };
   }
 };
 </script>
