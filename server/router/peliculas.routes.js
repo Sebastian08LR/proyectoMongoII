@@ -18,7 +18,7 @@ appPelicula.get('/api/v2', [query("id").notEmpty()], async (req, res) => {
     res.send(await obj.getMovieInfo(req.query))
 })
 
-appPelicula.get('/api/v3', [query("id").notEmpty()], async (req, res) => {
+appPelicula.get('/api/v3', [query("movieId").notEmpty()], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: "Envie el _id de una pelicula existente" });
