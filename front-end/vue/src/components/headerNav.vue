@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div class="header" :class="{ 'gradient-background': useGradient }">
     <button class="back-button" @click="goBack">
       <img src="../assets/arrow-right.svg" alt="">
     </button>
@@ -14,7 +14,14 @@
 import { useRoute, useRouter } from 'vue-router';
 import { onMounted, ref, computed, watch} from 'vue';
 export default {
-  setup() {
+  props: {
+    useGradient: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  setup(props) {
     const route = useRoute();
     const router = useRouter();
 
@@ -22,18 +29,29 @@ export default {
       if (route.name === 'reservation') {
         const movieId = route.params.movieId;
         if (movieId) {
-          router.push(`/movie/${movieId}`);
+          router.push({ name: 'MovieDetail', params: { id: movieId } });
         } else {
-          router.push('/'); // Fallback a la página principal si no hay movieId
+          router.push('/');
         }
+      } else if (route.name === 'PaymentView') {
+        // Volver a la vista de reservación
+        const movieId = route.params.movieId;
+        router.push({ name: 'reservation', params: { movieId } });
       } else {
         router.push('/');
       }
     };
 
-    const headerTitle = computed(() => {
-      return route.name === 'reservation' ? 'Choose Seat' : 'Cinema Selection';
-    });
+      const headerTitle = computed(() => {
+        switch(route.name) {
+          case 'reservation':
+            return 'Choose Seat';
+          case 'PaymentView':
+            return 'Order Summary';
+          default:
+            return 'Cinema Selection';
+        }
+      });
 
     return {
       goBack,
@@ -53,10 +71,13 @@ export default {
   color: #fff;
   height: 5vh;
 }
+.gradient-background {
+  background: transparent
+}
 .back-button {
   width: 40px;
   height: 40px;
-  background-color: #121212;
+  background-color: transparent;
   border: none;
   border-radius: 50%;
   display: flex;
@@ -66,13 +87,13 @@ export default {
 }
 
 .back-button i {
-  color: #ffffff;
+  color: #ffffff36;
   font-size: 18px;
 }
 .more-options-button {
   width: 40px;
   height: 40px;
-  background-color: #121212;
+  background-color: transparent;
   border: none;
   border-radius: 50%;
   display: flex;

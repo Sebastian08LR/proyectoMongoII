@@ -1,6 +1,6 @@
-import Connection from '../../../server/db/connect/connect.js';
+const Connection = require('../helpers/connect/connect.js');
 
-export class Boletos {
+class Boletos {
     constructor(username, password) {
         this.connection = new Connection(username, password);
     }
@@ -190,3 +190,5 @@ export class Boletos {
         }
     }
 }
+
+module.exports = Boletos;

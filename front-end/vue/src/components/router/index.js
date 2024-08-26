@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import MovieDetail from '../../views/MovieDetail.vue';
 import HomeView from '../../views/HomeView.vue';
 import Reservation from '../../views/Reservation.vue';
+import paymentProcess from '../../views/PaymentProcess.vue';
 
 const routes = [
   {
@@ -22,6 +23,12 @@ const routes = [
     component: Reservation,
     props: true //Permite el uso de los props con el fin de enviar los id's internos para realizar los fetch
   
+  },
+  {
+    path: '/payment/:movieId',
+    name: 'PaymentView',
+    component: paymentProcess,
+    props: true 
   }
 ];
 

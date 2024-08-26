@@ -1,5 +1,5 @@
 <template>
-    <div class="spinner"></div>
+    <div class="spinner"><img src="../assets/loading.gif"></div>
 </template>
 
 <script>    
@@ -8,13 +8,12 @@
 
 <style scoped>
 .spinner {  
+  position: relative; 
   justify-self: center;
   align-self: center;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #fff;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
+}
+.spinner img {
+  width: 50px;
+  height: 50px;
 }
 </style>

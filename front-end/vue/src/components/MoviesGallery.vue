@@ -20,9 +20,9 @@
       </div>
     </div>
 
-    <section class="section now-playing">
-      <div v-if="isLoading" class="loading">Loading movies...</div>
-      <div v-else>
+    <loading v-if="isLoading" class="loadingForNowPlaying"></loading>
+    <section v-else class="section now-playing">
+      <div >
         <div class="section-header">
           <h2>Now playing</h2>
           <a href="#" class="see-all">See all</a>
@@ -41,13 +41,12 @@
         >
           <swiper-slide v-for="movie in moviesArray" :key="movie.id" @click="goToMovieDetail(movie.id)">
             <img :src="movie.imagen" :alt="movie.titulo" class="movie-image" />
-            {{ console.log(movie) }}
           </swiper-slide>
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
         <div class="movie-info">
-          <!-- <h2 class="movie-title">{{ currentMovie.titulo }}</h2>
-          <p class="movie-genre">{{ currentMovie.genero }}</p> -->
+          <h2 class="movie-title">{{ currentMovie.titulo }}</h2>
+          <p class="movie-genre">{{ currentMovie.genero }}</p>
         </div>
       </div>
     </section>
@@ -101,12 +100,14 @@ import { useRouter } from 'vue-router';
 import  { useMovieStore } from '../store/movieStore.js';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
+import loading from './loading.vue';
 
 
 export default {
   components: {
     Swiper,
     SwiperSlide,
+    loading,
   },
   setup() {
     const movieStore = useMovieStore();
@@ -176,6 +177,10 @@ export default {
     margin-bottom: 10px;
     margin-top: 25px;
     margin-left: 5vw;
+  }
+  .loadingForNowPlaying{
+    margin-top: 100px;
+    margin-bottom: 100px;
   }
   .movies-slider {
   width: 100%;
@@ -415,7 +420,8 @@ export default {
     border-top-right-radius: 15px;
     width: 100%;
     bottom: 0;
-    background-color: #232323;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(to right, #232323 0%, #161616 100%);
   }
 
   .nav-item {

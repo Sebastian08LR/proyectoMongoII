@@ -1,6 +1,6 @@
 <template>
     <div class="buySeat">
-        <headerNav></headerNav>
+        <headerNav :key="$route.fullPath"></headerNav>
         <div class="screenConrainer">
             <img src="../assets/screen.svg" alt="SCREEN">
             <p>Screen this way</p>
@@ -12,7 +12,7 @@
         <div class="statusContainer">
             <div class="seatStatus">
                 <div class="colorI"></div>
-                <p>Avaliable</p>
+                <p>Available</p>
             </div>
             <div class="seatStatus">
                 <div class="colorII"></div>
@@ -31,10 +31,17 @@
                 <h3>Price</h3>
                 <h2>$24.99</h2>
             </div>
-            <button class="BuyTicketsBtn">Buy Tickets</button>
+            <button 
+                class="BuyTicketsBtn" 
+                :disabled="!hasSelectedSeats"
+                @click="proceedToPayment"
+            >
+                Buy Tickets
+            </button>
         </div>
     </div>
 </template>
+
 
 <script>
 import seatsLayout from './seatsLayout.vue';
@@ -55,30 +62,36 @@ export default {
     },
     setup() {
         const seatsStore = useSeatsStore();
-        const { seatsData, isLoading, error, functions } = storeToRefs(seatsStore);
+        const { seatsData, isLoading, error, functions, selectedSeats } = storeToRefs(seatsStore);
         const { getSeats, seleccionarDia, seleccionarHorario } = seatsStore;
 
-        // Accedemos a la ruta actual
         const route = useRoute();
         const router = useRouter();
 
-        // Extraemos el movieId de los parámetros de la URL
         const movieId = route.params.movieId;
 
         const functionId = computed(() => seatsStore.horarioSeleccionado?.id);
 
-        onMounted(() => {
-        seatsStore.getMovieFunctions(movieId);
-        if (functionId.value) {
-            seatsStore.getSeats(movieId, functionId.value);
-        }
+        const hasSelectedSeats = computed(() => {
+            return selectedSeats.value.length > 0;
         });
 
-        // Watch para actualizar los asientos cuando cambie el horario seleccionado
+        const proceedToPayment = () => {
+            router.push({ name: 'PaymentView', params: { movieId } });
+        };
+
+        onMounted(() => {
+            seatsStore.resetState();
+            seatsStore.getMovieFunctions(movieId);
+            if (functionId.value) {
+                seatsStore.getSeats(movieId, functionId.value);
+            }
+        });
+
         watch(() => functionId.value, (newFunctionId) => {
-        if (newFunctionId) {
-            seatsStore.getSeats(movieId, newFunctionId);
-        }
+            if (newFunctionId) {
+                seatsStore.getSeats(movieId, newFunctionId);
+            }
         });
 
         return {
@@ -86,7 +99,9 @@ export default {
             functions,
             isLoading,
             error,
-            getSeats
+            getSeats,
+            hasSelectedSeats,
+            proceedToPayment
         };
     },
 }
@@ -102,6 +117,7 @@ export default {
         display: flex;
         flex-direction: column;
         height: 100vh;
+        justify-content: space-between;
     }
     .screenConrainer{
         background-color: #121212;
@@ -195,5 +211,29 @@ export default {
     }
     .confirmSeats{
         background-color: #121212;
+    }
+    
+    .BuyTicketsBtn:disabled {
+        background-color: #888888;
+        cursor: not-allowed;
+        transform: scale(1);
+        box-shadow: none;
+    }
+
+    .BuyTicketsBtn:not(:disabled) {
+        background-color: #FE0000;
+        transform: scale(1.05);
+        box-shadow: 0 4px 6px rgba(254, 0, 0, 0.2);
+    }
+
+    .BuyTicketsBtn:not(:disabled):hover {
+        background-color: #E60000;
+        transform: scale(1.1);
+        box-shadow: 0 6px 8px rgba(254, 0, 0, 0.3);
+    }
+
+    .BuyTicketsBtn:not(:disabled):active {
+        transform: scale(1.02);
+        box-shadow: 0 2px 4px rgba(254, 0, 0, 0.2);
     }
 </style>

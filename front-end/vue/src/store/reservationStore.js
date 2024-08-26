@@ -11,6 +11,15 @@ export const useSeatsStore = defineStore('seats', {
     selectedSeats: []
   }),
   actions: {
+    resetState() {
+      this.seatsData = [];
+      this.functions = [];
+      this.isLoading = true;
+      this.error = null;
+      this.diaSeleccionado = null;
+      this.horarioSeleccionado = null;
+      this.selectedSeats = [];
+    },
     getSeats(movieId, functionId) {
       console.log(movieId, functionId);
       fetch(`http://localhost:3001/movies/api/v4?movieId=${movieId}&functionId=${functionId}`)
@@ -54,6 +63,18 @@ export const useSeatsStore = defineStore('seats', {
     },
     seleccionarHorario(horario) {
       this.horarioSeleccionado = horario;
+    },
+    toggleSeat(seat) {
+      if (seat.estado === 'disponible') {
+        const seatIndex = this.selectedSeats.findIndex(
+          selectedSeat => selectedSeat.fila === seat.fila && selectedSeat.numero === seat.numero
+        );
+        if (seatIndex > -1) {
+          this.selectedSeats.splice(seatIndex, 1);
+        } else {
+          this.selectedSeats.push({ fila: seat.fila, numero: seat.numero });
+        }
+      }
     }
   },
   getters: {
