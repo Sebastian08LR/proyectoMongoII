@@ -59,7 +59,7 @@
       <div v-if="isLoading" class="loading">Loading...</div>
       <div v-else class="comingSoonGallery">
         <div v-for="movie in moviesComingSoonArray" :key="movie.id" class="cardContainer">
-          <div class="commingSoonCard" @click="goToMovieDetail(movie.id)">
+          <div class="commingSoonCard" @click="goToMovieDetailCommingSoon(movie.id)">
             <img :src="movie.imagen" :alt="movie.titulo" class="comingSoonImage" />
             <div class="comingSoonInfo">
               <h3 class="movie-title">{{ movie.titulo }}</h3>
@@ -139,6 +139,9 @@ export default {
     
     goToMovieDetail(id) {
       this.$router.push({ name: 'MovieDetail', params: { id } });
+    },
+    goToMovieDetailCommingSoon(id){
+      this.$router.push({ name: 'MovieDetailCommingSoon', params: { id } });
     },
     onSwiper(swiper) {
       this.currentIndex = swiper.realIndex;

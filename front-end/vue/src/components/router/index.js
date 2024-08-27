@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MovieDetail from '../../views/MovieDetail.vue';
+import MovieDetailCommingSoon from '../../views/MovieDetailCommingSoon.vue';
 import HomeView from '../../views/HomeView.vue';
 import Reservation from '../../views/Reservation.vue';
 import paymentProcess from '../../views/PaymentProcess.vue';
@@ -16,6 +17,12 @@ const routes = [
     path: '/movie/:id',
     name: 'MovieDetail',
     component: MovieDetail,
+    props: true //Permite el uso de los props con el fin de enviar los id's internos para realizar los fetch
+  },
+  {
+    path: '/movie/commingSoon/:id',
+    name: 'MovieDetailCommingSoon',
+    component: MovieDetailCommingSoon,
     props: true //Permite el uso de los props con el fin de enviar los id's internos para realizar los fetch
   },
   {
