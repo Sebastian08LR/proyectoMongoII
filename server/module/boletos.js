@@ -16,6 +16,7 @@ class Boletos {
      * @returns {Promise<void>}
      */
     async buyTickets(ticketData) {
+        console.log(ticketData);
         let client;
         try {
             client = await this.connection.connect();
@@ -29,8 +30,22 @@ class Boletos {
             const pagosColection = db.collection('pagos');
     
             // Desestructuración de los parámetros dentro de la función
-            const [movie_id, proyeccion_id, asientos, metodoPago] = ticketData;
-    
+            let { movieId, projectionId, seats, paymentMethod } = ticketData;
+            movieId = parseInt(movieId);
+            projectionId = parseInt(projectionId);
+            const asientoStrings = seats.split(',');
+
+            // Convierte el array de strings en un array de objetos
+            const asientos = asientoStrings.map(asiento => {
+            const letraAsiento = asiento.charAt(0); // Obtiene la letra del asiento
+            const numAsiento = parseInt(asiento.slice(1), 10); // Obtiene el número del asiento
+            
+            return {
+                letraAsiento,
+                numAsiento
+            };
+            });
+            console.log(asientos);
             const ultimoBoletoRegistrado = await boletosColection.findOne({}, { sort: { _id: -1 } });
             const nombre = process.env.MONGO_USER;
             const password = process.env.MONGO_PASSWORD;
@@ -40,7 +55,7 @@ class Boletos {
                     { password: password }
                 ]
             }).toArray();
-    
+            console.log(nombre, password);
             if (usuario.length === 0) {
                 console.log("Usuario o contraseña incorrectos");
                 return;
@@ -48,21 +63,21 @@ class Boletos {
     
             const usuarioRol = usuario[0].rol;
             const usuarioId = usuario[0].id;
-    
-            let selectedMovie = await peliculasColection.findOne({ id: movie_id });
+            let selectedMovie = await peliculasColection.findOne({ id: movieId });
+            
             if (selectedMovie) {
                 let proyections = selectedMovie.proyecciones;
     
                 for (let proyection of proyections) {
-                    if (proyection.id === proyeccion_id) {
+                    if (proyection.id === projectionId) {
                         let sala_id = proyection.sala;
                         let sala = await salasColection.findOne({ _id: sala_id });
                         if (sala) {
                             let capacidad = sala.capacidad;
                             const documentoExistente = await asientosProyectionColection.find({
                                 $and: [
-                                    { id_pelicula: movie_id },
-                                    { id_proyection: proyeccion_id }
+                                    { id_pelicula: movieId },
+                                    { id_proyection: projectionId }
                                 ]
                             }).toArray();
     
@@ -72,34 +87,50 @@ class Boletos {
                                     break;
                                 }
                             }
-    
+                            
                             // Procesar cada asiento individualmente
-                            for (let asiento of asientos) {
-                                const [numAsiento, letraAsiento] = asiento;
-                                const letraAsientoUpper = letraAsiento.toUpperCase();
-    
-                                const asientoExiste = sala.asientos.some(a => a.numero === numAsiento && a.fila === letraAsientoUpper);
-                                if (asientoExiste) {
-                                    if (documentoExistente.length <= 0) {
-                                        await asientosProyectionColection.insertOne({
-                                            id_pelicula: movie_id,
-                                            id_proyection: proyeccion_id,
-                                            occupiedSeats: [`${numAsiento}${letraAsientoUpper}`]
-                                        });
-                                    } else if (documentoExistente.length > 0) {
-                                        const existingSeats = documentoExistente[0].occupiedSeats;
-                                        const newSeat = `${numAsiento}${letraAsientoUpper}`;
-    
-                                        if (existingSeats.includes(newSeat)) {
-                                            console.log(`El asiento ${newSeat} ya está ocupado.`);
-                                            continue;
-                                        } else {
-                                            await asientosProyectionColection.updateOne(
-                                                { _id: documentoExistente[0]._id },
-                                                { $addToSet: { occupiedSeats: newSeat } }
-                                            );
-                                        }
+                            console.log(movieId, projectionId);
+                            const asientoExiste = await asientosProyectionColection.findOne({ $and: [{ id_pelicula: movieId},{ id_proyection: projectionId }]});
+                            console.log(asientoExiste)
+                            if (asientoExiste) {
+                                // El documento existe, actualizamos
+                                const asientosOcupados = asientoExiste.occupiedSeats || [];
+                                const asientosNuevos = [];
+                                const asientosYaOcupados = [];
+
+                                for (const asiento of asientos) {
+                                    const nuevoAsiento = `${asiento.numAsiento}${asiento.letraAsiento.toUpperCase()}`;
+                                    if (!asientosOcupados.includes(nuevoAsiento)) {
+                                        asientosNuevos.push(nuevoAsiento);
+                                    } else {
+                                        asientosYaOcupados.push(nuevoAsiento);
                                     }
+                                }
+
+                                if (asientosNuevos.length > 0) {
+                                    await asientosProyectionColection.updateOne(
+                                        { _id: asientoExiste._id },
+                                        { $addToSet: { occupiedSeats: { $each: asientosNuevos } } }
+                                    );
+                                }
+
+                                if (asientosYaOcupados.length > 0) {
+                                    console.log(`Los siguientes asientos ya están ocupados: ${asientosYaOcupados.join(', ')}`);
+                                }
+                            } else {
+                                // El documento no existe, lo creamos
+                                const asientosNuevos = asientos.map(asiento => `${asiento.numAsiento}${asiento.letraAsiento.toUpperCase()}`);
+                                
+                                await asientosProyectionColection.insertOne({
+                                    id_pelicula: movieId,
+                                    id_proyection: projectionId,
+                                    occupiedSeats: asientosNuevos
+                                });
+                            }
+                            for (let asiento of asientos) {
+                                console.log(asiento)
+                                let {numAsiento, letraAsiento} = asiento;
+                                const letraAsientoUpper = letraAsiento.toUpperCase()
     
                                     const precioBase = 10.50;
                                     const descuento = usuarioRol === "vip" ? 10 : 0;
@@ -107,8 +138,8 @@ class Boletos {
     
                                     const boleto = await boletosColection.insertOne({
                                         "id": ultimoBoletoRegistrado.id + 1,
-                                        "pelicula_id": movie_id,
-                                        "proyeccion_id": proyeccion_id,
+                                        "pelicula_id": movieId,
+                                        "proyeccion_id": projectionId,
                                         "usuario_id": usuarioId,
                                         "asiento": {
                                             "numero": numAsiento,
@@ -118,8 +149,7 @@ class Boletos {
                                         "descuento_aplicado": descuento,
                                         "fecha_compra": new Date()
                                     });
-                                    console.log(boleto);
-    
+                                    
                                     const ultimoPagoRegistrado = await pagosColection.findOne({}, { sort: { _id: -1 } });
                                     await pagosColection.insertOne({
                                         "id": ultimoPagoRegistrado.id + 1,
@@ -128,9 +158,7 @@ class Boletos {
                                         "monto": precioTotal,
                                         "estado": "pendiente"
                                     });
-                                } else {
-                                    console.log(`El asiento ${numAsiento}${letraAsientoUpper} no está disponible`);
-                                }
+                                    return boleto
                             }
                         } else {
                             console.log("No se encontró la sala con el ID proporcionado.");
@@ -147,6 +175,7 @@ class Boletos {
             await this.connection.close();
         }
     }
+    
 
     /**
      * This function retrieves and displays the tickets purchased by a specific user.

@@ -109,6 +109,7 @@ class Pelicula {
      * @throws Will throw an error if there is a problem connecting to the database or retrieving data.
      */
     async getMovieAvaliableSeats(movieInfo) {
+        console.log(movieInfo);
         const movie_id = parseInt(movieInfo.movieId);
         const proyection_id = parseInt(movieInfo.functionId);
 

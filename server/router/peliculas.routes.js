@@ -4,6 +4,7 @@ const Pelicula = require('../module/peliculas');
 const Boleto = require('../module/boletos'); 
 const express = require('express');
 const appPelicula = express.Router();
+let obj2 = new Boleto;
 
 appPelicula.get('/api/v1', async (req, res) => {
     let obj = new Pelicula;
@@ -46,18 +47,28 @@ appPelicula.get('/api/v5', async (req, res) => {
     res.send(await obj.getMoviesComingSoon())
 })
 
-appPelicula.get('api/v6',[
+appPelicula.get('/api/v4/buyTickets', [
     query("movieId").notEmpty().withMessage("El ID de la película es requerido"),
-    query("functionId").notEmpty().withMessage("El ID de la función es requerido"),
-    query("seats").notEmpty().withMessage("el array con los asientos o asiento es requerido")
+    query("projectionId").notEmpty().withMessage("El ID de la proyección es requerido"),
+    query("seats")
+        .custom(value => {
+            // Convertir la cadena en un array
+            const seats = value.split(',');
+            // Validar que cada asiento tenga un formato válido (ej: "C2")
+            return seats.every(seat => /^[A-F][0-9]+$/.test(seat));
+        })
+        .withMessage("Formato inválido para los asientos"),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
     
-    let obj = new Boleto();
-    res.send(await obj.buyTickets(req.query));
-}
-)
+    let objBoleto = new Boleto;
+    try {
+        res.send(await objBoleto.buyTickets(req.query));
+    } catch (error) {
+        res.status(500).json({ error: "Error al comprar los boletos", details: error.message });
+    }
+});
 module.exports = appPelicula;

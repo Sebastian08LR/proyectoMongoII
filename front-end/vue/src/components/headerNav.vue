@@ -37,6 +37,8 @@ export default {
         // Volver a la vista de reservación
         const movieId = route.params.movieId;
         router.push({ name: 'reservation', params: { movieId } });
+      } else if(route.name === 'TicketsView'){
+        router.push('/');
       } else {
         router.push('/');
       }
@@ -48,6 +50,8 @@ export default {
             return 'Choose Seat';
           case 'PaymentView':
             return 'Order Summary';
+          case 'TicketsView':
+            return 'Ticket'
           default:
             return 'Cinema Selection';
         }

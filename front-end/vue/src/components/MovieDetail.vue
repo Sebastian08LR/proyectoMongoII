@@ -2,23 +2,20 @@
   <div class="detailsContainer">
     <headerNav></headerNav>
     <div class="MovieSelected">
-      <div class="ImageContainer">
-        <loading v-if="loading" route="Home"></loading>
-        <img v-else :src="movie.imagen" alt="Movie Image">
+      <div v-if="!isLoading" class="ImageContainer">
+        <img :src="movie.imagen" alt="Movie Image">
       </div>
-
-      <div class="TralierBottom" v-if="!loading">
+      <loading v-else></loading>
+      <div class="TralierBottom">
         <button class="trailer-button">
-          <img src="../assets/play.svg" alt=""></img>
+          <img src="../assets/play.svg" alt="">
           <span>Watch Trailer</span>
         </button>
       </div>
-
-      <div class="MovieDetails">
-        <p v-if="!loading">{{ movie.sinopsis }}</p>
+      <div v-if="!isLoading" class="MovieDetails">
+        <p>{{ movie.sinopsis }}</p>
         <h2 class="castHeader">Cast</h2>
-        <loading v-if="loading"></loading>
-        <div v-if="movie && movie.actores" class="cast">
+        <div v-if="movie" class="cast">
           <div v-for="actor in movie.actores" :key="actor.id" class="actor">
             <div class="PjIcone">
               <img src="../assets/Ellipse.png" alt="Actor Image">
@@ -30,40 +27,34 @@
           </div>
         </div>
       </div>
+      
       <div class="cinema">
         <h2 class="cinemaHeader">Cinema</h2>
         <div class="cinemaContainer">
-          <div class="cinemaItem" :class="{ 'selected': selectedCinema === 'CineCampus' }" @click="selectCinema('CineCampus')">
+          <div v-for="cinema in cinemas" :key="cinema.id"
+               class="cinemaItem"
+               :class="{ 'selected': selectedCinema?.id === cinema.id }"
+               @click="selectCinema(cinema.id)">
             <div class="cinemaInfo">
-              <h3>CineCampus</h3>
-              <p>12:00 PM</p>
+              <h3>{{ cinema.name }}</h3>
+              <p>{{ cinema.time }}</p>
             </div>
-            <img class="cinemaImage" src="https://placehold.jp/50x50.png">
-          </div>
-          <div class="cinemaItem" :class="{ 'selected': selectedCinema === 'CineLands' }" @click="selectCinema('CineLands')">
-            <div class="cinemaInfo">
-              <h3>CineLands</h3>
-              <p>14:00 PM</p>
-            </div>
-            <img class="cinemaImage" src="https://placehold.jp/50x50.png">
+            <img class="cinemaImage" src="../assets/cinemaLogo.png">
           </div>
         </div>
       </div>
       <div class="bookingContainer">
-        <button class="bookNow" @click="goToReservation(movie.id)" :disabled="!selectedCinema">
+        <button class="bookNow" @click="goToReservation" :disabled="!selectedCinema">
           <h2>Book Now</h2>
         </button>
       </div>
-    </div>
-
-    <div v-if="!movie && !loading">
-      <p>Loading movie details...</p>
     </div>
   </div>
 </template>
 
 <script>
-import { useMovieStore } from '../store/movieStore';
+import { mapState, mapActions } from 'pinia';
+import { useSeatsStore } from '../store/reservationStore';
 import headerNav from './headerNav.vue';
 import loading from './loading.vue';
 
@@ -73,39 +64,24 @@ export default {
     loading,
   },
   
-  data() {
-    return {
-      movie: null,
-      loading: true, // Variable de estado de carga
-      selectedCinema: null // Variable para seleccionar el cine
-    };
-  },
   computed: {
+    ...mapState(useSeatsStore, ['movie', 'isLoading', 'selectedCinema', 'cinemas']),
     movieId() {
-      return this.$route.params.id; // Obtén el ID desde la URL
+      return this.$route.params.id;
     }
   },
+  
   mounted() {
-    this.fetchMovieDetails();
+    this.fetchMovieDetails(this.movieId);
   },
+  
   methods: {
-    fetchMovieDetails() {
-      fetch(`http://localhost:3001/movies/api/v2?id=${this.movieId}`)
-        .then(response => response.json())
-        .then(data => {
-          this.movie = data;
-          this.loading = false; // Finaliza la carga cuando se reciben los datos
-        })
-        .catch(error => console.error('Error fetching movie details:', error));
-    },
-    selectCinema(cinema) {
-      this.selectedCinema = cinema;
-    },
-    goToReservation(movieId) {
+    ...mapActions(useSeatsStore, ['fetchMovieDetails', 'selectCinema']),
+    goToReservation() {
       if (this.selectedCinema) {
-        this.$router.push({ name: 'reservation', params: { movieId }  });
+        this.$router.push({ name: 'reservation', params: { movieId: this.movieId }});
       }
-    },
+    }
   }
 };
 </script>

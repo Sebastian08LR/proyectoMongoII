@@ -8,7 +8,13 @@ export const useSeatsStore = defineStore('seats', {
     error: null,
     diaSeleccionado: null,
     horarioSeleccionado: null,
-    selectedSeats: []
+    selectedSeats: [],
+    movie: null,
+    selectedCinema: null,
+    cinemas: [
+      { id: 'CineCampus', name: 'CineCampus', time: '12:00 PM' },
+      { id: 'CineLands', name: 'CineLands', time: '14:00 PM' }
+    ]
   }),
   actions: {
     resetState() {
@@ -19,6 +25,27 @@ export const useSeatsStore = defineStore('seats', {
       this.diaSeleccionado = null;
       this.horarioSeleccionado = null;
       this.selectedSeats = [];
+    },
+    async fetchMovieDetails(movieId) {
+      this.isLoading = true;
+      try {
+        console.log(movieId);
+        const response = await fetch(`http://localhost:3001/movies/api/v2?id=${movieId}`);
+        console.log(response);
+        const data = await response.json();
+        this.movie = data;
+        this.isLoading = false;
+      } catch (error) {
+        console.error('Error fetching movie details:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    selectCinema(cinemaId) {
+      this.selectedCinema = this.cinemas.find(cinema => cinema.id === cinemaId);
+    },
+    resetSelection() {
+      this.selectedCinema = null;
     },
     getSeats(movieId, functionId) {
       console.log(movieId, functionId);

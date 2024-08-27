@@ -3,6 +3,7 @@ import MovieDetail from '../../views/MovieDetail.vue';
 import HomeView from '../../views/HomeView.vue';
 import Reservation from '../../views/Reservation.vue';
 import paymentProcess from '../../views/PaymentProcess.vue';
+import ticketsView from '../../views/ticketsView.vue';
 
 const routes = [
   {
@@ -29,6 +30,12 @@ const routes = [
     name: 'PaymentView',
     component: paymentProcess,
     props: true 
+  },
+  {
+    path: '/tickets',
+    name: 'TicketsView',
+    component: ticketsView,
+    props: true
   }
 ];
 
