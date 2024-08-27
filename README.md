@@ -4,6 +4,117 @@
 
 ---
 
+# CineCampus GUIA DE USO
+
+Este proyecto es una aplicación web de gestión de reservas de cine que utiliza Vue.js en el frontend y Express.js en el backend. Está dividido en dos partes: el frontend para la interfaz de usuario y el backend para la API y el servidor.
+
+## Estructura del Proyecto
+
+- **Frontend**: Desarrollado con Vue.js y Vite.
+- **Backend**: Desarrollado con Express.js y APIs para gestionar los datos.
+
+## Tecnologías Utilizadas
+
+### Frontend
+
+- **Vue.js**: ^3.4.35
+- **Vue Router**: ^4.4.3
+- **Pinia**: ^2.2.1
+- **Swiper**: ^11.1.9
+- **Vite**: ^5.4.0
+
+### Backend
+
+- **Express.js**: ^4.19.2
+- **MongoDB/Mongoose**: ^6.8.0 / ^8.5.1
+- **Express Validator**: ^7.1.0
+- **CORS**: ^2.8.5
+- **dotenv**: ^16.4.5
+
+## Configuración del Proyecto
+
+### Frontend
+
+1. Clona el repositorio e ingresa a la carpeta del frontend:
+
+   ```bash
+   cd front-end/vue
+   ```
+
+2. Instala las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+3. Para ejecutar el entorno de desarrollo:
+
+   ```bash
+   npm run vite
+   ```
+
+4. Para crear una versión de producción:
+
+   ```bash
+   npm run build
+   ```
+
+5. Para previsualizar la versión de producción:
+
+   ```bash
+   npm run preview
+   ```
+
+### Backend
+
+1. Instala las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+2. Configura las variables de entorno en un archivo `.env`:
+
+   ```
+   MONGO_URI = 'mongodb://junction.proxy.rlwy.net:47682'
+   DB_NAME = ''
+
+   MONGO_USER = 'Sebastian'
+   MONGO_PASSWORD = '123'
+
+   PORT='3001' 
+   HOST="localhost"
+   EXPRESS_STATIC="public"
+   ```
+
+3. Para ejecutar el servidor en modo desarrollo:
+
+   ```bash
+   npm run dev
+   ```
+
+## Uso de la Aplicación
+
+1. **Inicio**: El frontend proporciona una interfaz para que los usuarios seleccionen y reserven asientos en el cine.
+2. **Gestión de Reservas**: A través de la API, puedes gestionar las reservas, consultar funciones y asientos disponibles.
+3. **Base de Datos**: Se utiliza MongoDB para almacenar la información de las funciones, asientos y reservas.
+
+## Estructura de Carpetas
+
+- **frontend/**: Contiene el código Vue.js y la configuración de Vite.
+- **backend/**: Contiene el servidor Express.js y la configuración de la API.
+
+## Scripts Útiles
+
+- **Frontend**:
+  - `npm run vite`: Ejecuta el servidor de desarrollo.
+
+- **Backend**:
+  - `npm run dev`: Ejecuta el servidor Express en modo desarrollo.
+
+Este README proporciona una guía básica sobre cómo configurar y usar la aplicación, además de detallar las tecnologías y scripts disponibles en ambos entornos, frontend y backend.
+---
+
 
 CineCampus es una aplicación web para la gestión de una experiencia cinematográfica completa. Permite a los usuarios seleccionar películas, comprar boletos, asignar asientos y disfrutar de opciones de descuento para tarjetas VIP.
 
