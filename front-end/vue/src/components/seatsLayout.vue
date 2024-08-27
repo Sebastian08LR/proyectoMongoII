@@ -2,14 +2,16 @@
   <div class="seat-container">
     <div v-for="(fila, letra) in groupedSeats" :key="letra" :class="['seat-row', { 'extra-space': letra === 'C' }]">
       <div class="row-letter">{{ letra }}</div>
-      <div
-        v-for="seat in fila"
-        :key="seat"
-        :class="['seat', getSeatClass(seat)]"
-        @click="toggleSeat(seat, index)"
-      >
-        <span>{{ seat.numero }}</span>
-      </div>
+      <div class="seats">
+        <div
+          v-for="seat in fila"
+          :key="seat"
+          :class="['seat', getSeatClass(seat)]"
+          @click="toggleSeat(seat, index)"
+        >
+          <span>{{ seat.numero }}</span>
+        </div>
+    </div>
     </div>
   </div>
 </template>
@@ -58,6 +60,15 @@ export default {
 </script>
 
 <style scoped>
+.seats{
+  margin-left: 10px;
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+}
 .seat-container {
   display: flex;
   flex-direction: column;
@@ -69,6 +80,7 @@ export default {
   display: flex;
   gap: 6px;
   align-items: center;
+  width: 100%;
 }
 
 .seat-row.extra-space {
